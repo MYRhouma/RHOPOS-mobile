@@ -9,8 +9,14 @@ import {
   StyleSheet,
   SafeAreaView,
   View,
+  TouchableOpacity,
 } from "react-native";
-import { ShoppingBag, AlignLeft } from "@tamagui/lucide-icons";
+import {
+  ShoppingBag,
+  AlignLeft,
+  ArrowRight,
+  ChevronDown,
+} from "@tamagui/lucide-icons";
 import {
   H3,
   Text,
@@ -30,7 +36,8 @@ import {
   Card,
 } from "tamagui";
 import config from "../../tamagui.config";
-export default function POS() {
+import ProductButton from "../pos-view/ProductButton";
+export default function POS({ navigation }) {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
@@ -46,11 +53,28 @@ export default function POS() {
   return (
     <TamaguiProvider config={config}>
       {/* <Theme name={colorScheme === "dark" ? "dark" : "light"}> */}
-      <Theme name="light">
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#111315" }}>
-          <View>
+      <Theme name="dark">
+        <SafeAreaView
+          style={{
+            flex: 1,
+            backgroundColor: "#111315",
+            // width: "95%",
+            // alignSelf: "center",
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignSelf: "center",
+              width: "90%",
+              margin: 10,
+            }}
+          >
             <AlignLeft />
-            <Text>Table 5</Text>
+            <Text>
+              Table 5 <ChevronDown />
+            </Text>
           </View>
           <ScrollView
             horizontal
@@ -79,23 +103,18 @@ export default function POS() {
               width: "100%",
               justifyContent: "space-evenly",
               paddingBottom: 90,
+              borderTopColor: "#292b2d",
+              borderWidth: 1,
             }}
           >
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
-            <Button style={styles.block2}></Button>
+            <ProductButton name="Makloub" price="9.30" />
+            <ProductButton name="Panini" price="9.30" />
+            <ProductButton name="Sandwish" price="9.30" />
+            <ProductButton name="Burger" price="9.30" />
+            <ProductButton name="Libanais" price="9.30" />
+            <ProductButton name="Malfouf" price="9.30" />
+            <ProductButton name="Mlawi" price="9.30" />
+            <ProductButton name="Chapati" price="9.30" />
           </ScrollView>
           {X > 0 ? (
             <View
@@ -109,8 +128,12 @@ export default function POS() {
               }}
             >
               <Button
+                themeInverse
                 animation="bouncy"
                 size="$5"
+                onPress={() => {
+                  navigation.navigate("Cart");
+                }}
                 style={{
                   width: "80%",
                   alignSelf: "center",
