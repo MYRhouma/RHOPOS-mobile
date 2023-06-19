@@ -37,6 +37,8 @@ import {
 } from "tamagui";
 import config from "../../tamagui.config";
 import ProductButton from "../pos-view/ProductButton";
+import CategoryButton from "../pos-view/CategoryButton";
+
 export default function POS({ navigation }) {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
@@ -44,7 +46,7 @@ export default function POS({ navigation }) {
     InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
   });
 
-  const X = 8;
+  const [totalQuantity, setTotalQuantity] = useState(0); // State for the total quantity
 
   if (!loaded) {
     return null;
@@ -72,9 +74,10 @@ export default function POS({ navigation }) {
             }}
           >
             <AlignLeft />
-            <Text>
-              Table 5 <ChevronDown />
-            </Text>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={{ paddingRight: 5 }}>Table 5</Text>
+              <ChevronDown />
+            </View>
           </View>
           <ScrollView
             horizontal
@@ -83,14 +86,11 @@ export default function POS({ navigation }) {
               paddingBottom: 25,
             }}
           >
-            <Button style={styles.block}></Button>
-            <Button style={styles.block}></Button>
-            <Button style={styles.block}></Button>
-            <Button style={styles.block}></Button>
-            <Button style={styles.block}></Button>
-            <Button style={styles.block}></Button>
-            <Button style={styles.block}></Button>
-            <Button style={styles.block}></Button>
+            <CategoryButton name="Sandwish" color="#E4CDED" />
+            <CategoryButton name="Déjeuner" color="#CFDDDB" />
+            <CategoryButton name="Boissons" color="#C2DBE9" />
+            <CategoryButton name="Cafés" color="#F1C8D0" />
+            <CategoryButton name="Desserts" color="#C9CAEF" />
           </ScrollView>
 
           <ScrollView
@@ -107,16 +107,56 @@ export default function POS({ navigation }) {
               borderWidth: 1,
             }}
           >
-            <ProductButton name="Makloub" price="9.30" />
-            <ProductButton name="Panini" price="9.30" />
-            <ProductButton name="Sandwish" price="9.30" />
-            <ProductButton name="Burger" price="9.30" />
-            <ProductButton name="Libanais" price="9.30" />
-            <ProductButton name="Malfouf" price="9.30" />
-            <ProductButton name="Mlawi" price="9.30" />
-            <ProductButton name="Chapati" price="9.30" />
+            <ProductButton
+              name="Makloub"
+              price="9.30"
+              prevTotalQuantity={totalQuantity}
+              setTotalQuantity={setTotalQuantity}
+            />
+            <ProductButton
+              name="Panini"
+              price="9.30"
+              prevTotalQuantity={totalQuantity}
+              setTotalQuantity={setTotalQuantity}
+            />
+            <ProductButton
+              name="Sandwish"
+              price="9.30"
+              prevTotalQuantity={totalQuantity}
+              setTotalQuantity={setTotalQuantity}
+            />
+            <ProductButton
+              name="Burger"
+              price="9.30"
+              prevTotalQuantity={totalQuantity}
+              setTotalQuantity={setTotalQuantity}
+            />
+            <ProductButton
+              name="Libanais"
+              price="9.30"
+              prevTotalQuantity={totalQuantity}
+              setTotalQuantity={setTotalQuantity}
+            />
+            <ProductButton
+              name="Malfouf"
+              price="9.30"
+              prevTotalQuantity={totalQuantity}
+              setTotalQuantity={setTotalQuantity}
+            />
+            <ProductButton
+              name="Mlawi"
+              price="9.30"
+              prevTotalQuantity={totalQuantity}
+              setTotalQuantity={setTotalQuantity}
+            />
+            <ProductButton
+              name="Chapati"
+              price="9.30"
+              prevTotalQuantity={totalQuantity}
+              setTotalQuantity={setTotalQuantity}
+            />
           </ScrollView>
-          {X > 0 ? (
+          {totalQuantity > 0 ? (
             <View
               style={{
                 position: "absolute",
@@ -135,14 +175,15 @@ export default function POS({ navigation }) {
                   navigation.navigate("Cart");
                 }}
                 style={{
-                  width: "80%",
+                  width: "85%",
                   alignSelf: "center",
                   borderRadius: 100,
                   // zIndex: 9999,
                 }}
               >
                 <Button.Text>
-                  Il y a {X} produit{X > 1 ? "s" : ""} dans le <ShoppingBag />
+                  Il y a {totalQuantity} produit{totalQuantity > 1 ? "s" : ""}{" "}
+                  dans le <ShoppingBag />
                 </Button.Text>
               </Button>
             </View>

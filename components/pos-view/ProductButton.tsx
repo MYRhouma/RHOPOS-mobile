@@ -1,16 +1,34 @@
+import { useState } from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
-
 import { ArrowRight, PlusSquare, MinusSquare } from "@tamagui/lucide-icons";
 import { Button, Text, H6 } from "tamagui";
 
 interface Props {
   name: string;
   price: string;
+  prevTotalQuantity: number;
+  setTotalQuantity: () => void;
 }
 
-const ProductButton = ({ name, price }: Props) => {
+const ProductButton = ({
+  name,
+  price,
+  prevTotalQuantity,
+  setTotalQuantity,
+}: Props) => {
+  const [qty, setQty] = useState(0);
+  const IncrementQty = (qty: number) => {
+    setQty(qty + 1);
+    setTotalQuantity(prevTotalQuantity + 1);
+  };
+  const DecrementQty = (qty: number) => {
+    if (qty > 0) {
+      setQty(qty - 1);
+      setTotalQuantity(prevTotalQuantity - 1);
+    }
+  };
   return (
-    <TouchableOpacity style={styles.product}>
+    <View style={styles.product}>
       <Text style={{ fontSize: 11, color: "#ababab" }}>
         Commande <ArrowRight size={13} /> Cuisine
       </Text>
@@ -23,13 +41,51 @@ const ProductButton = ({ name, price }: Props) => {
           width: "100%",
         }}
       >
-        <Text style={{ textAlign: "center", justifyContent: "center" }}>
-          <MinusSquare color="#686868" />
-          <Text style={{ fontSize: 18 }}> 0 </Text>
-          <PlusSquare color="#ababab" />
-        </Text>
+        <View
+          style={{
+            // backgroundColor: "purple",
+            width: "60%",
+            flexDirection: "row",
+            justifyContent: "space-around",
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              DecrementQty(qty);
+            }}
+          >
+            <MinusSquare color={qty > 0 ? "#ababab" : "#686868"} size={32} />
+          </TouchableOpacity>
+          <Text
+            style={{
+              fontSize: 18,
+              alignSelf: "center", // Vertically center align text within the container
+            }}
+          >
+            {qty}
+          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              IncrementQty(qty);
+            }}
+          >
+            <PlusSquare color="#ababab" size={32} />
+          </TouchableOpacity>
+        </View>
       </View>
-    </TouchableOpacity>
+      <View
+        style={{
+          position: "absolute",
+          left: 0,
+          bottom: 0,
+          width: 5,
+          backgroundColor: "#E4CDED",
+          height: 110,
+          borderTopLeftRadius: 8,
+          borderBottomLeftRadius: 8,
+        }}
+      ></View>
+    </View>
   );
 };
 
@@ -44,6 +100,7 @@ const styles = StyleSheet.create({
     height: 110,
     backgroundColor: "#292b2d",
     marginTop: 10,
+    paddingLeft: 15,
     marginBottom: 5,
   },
 });
