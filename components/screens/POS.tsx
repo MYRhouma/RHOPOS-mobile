@@ -191,13 +191,13 @@ export default function POS({ navigation }) {
               }}
             />
           </View>
-          <Button
+          {/* <Button
             onPress={() => {
               setCartItems([]);
             }}
           >
             Reset
-          </Button>
+          </Button> */}
           {isLoadingProducts ? (
             // <Spinner
             //   style={{
