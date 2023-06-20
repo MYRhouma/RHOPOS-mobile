@@ -235,17 +235,4 @@ const styles = StyleSheet.create({
   quantityText: {
     color: "#ababab",
   },
-  card: {
-    width: "85%",
-    alignSelf: "center",
-    // height: 110,
-    backgroundColor: "#292b2d",
-    // marginTop: 10,
-    // marginBottom: 5,
-    padding: 20,
-    borderRadius: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 5,
-  },
 });

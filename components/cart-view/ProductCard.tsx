@@ -33,7 +33,10 @@ const ProductCard = ({ name, quantity, price }: Props) => {
   });
   const leftSwipe = () => {
     return (
-      <Button animation="bouncy" style={{ marginRight: 20, height: "100%" }}>
+      <Button
+        animation="bouncy"
+        style={{ marginRight: "7.5%", paddingVertical: 25 }}
+      >
         <Trash2 color="white" />
       </Button>
     );
