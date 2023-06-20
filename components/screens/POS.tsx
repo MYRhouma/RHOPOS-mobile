@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import {
@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   View,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import {
   ShoppingBag,
@@ -36,8 +37,11 @@ import {
   Card,
 } from "tamagui";
 import config from "../../tamagui.config";
+import axios from "axios";
+
 import ProductButton from "../pos-view/ProductButton";
 import CategoryButton from "../pos-view/CategoryButton";
+import { log } from "react-native-reanimated";
 
 export default function POS({ navigation }) {
   const colorScheme = useColorScheme();
@@ -45,7 +49,20 @@ export default function POS({ navigation }) {
     Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
     InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
   });
+  //https://rhopos.live/api/categories/(bid)
+  //https://rhopos.live/api/products/(bid)/(catid)
 
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+
+  // axios
+  //   .get("https://rhopos.live/api/categories/1")
+  //   .then(({ DATA }) => {
+  //     setData(DATA.data);
+  //     console.log(DATA.data[0].attributes.name);
+  //   })
+  //   .catch((error) => console.error(error))
+  //   .finally(() => setLoading(false));
   const [totalQuantity, setTotalQuantity] = useState(0); // State for the total quantity
 
   if (!loaded) {
@@ -82,10 +99,23 @@ export default function POS({ navigation }) {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingBottom: 25,
-            }}
+            contentContainerStyle={
+              {
+                // paddingBottom: 25,
+              }
+            }
           >
+            {/* <FlatList
+              data={DATA}
+              renderItem={({ item }) => <Item title={item.title} />}
+              keyExtractor={(item) => item.id}
+            /> */}
+
+            {/* <FlatList
+              data={JSON.stringify(data)}
+              keyExtractor={({ id }) => id}
+              renderItem={({ item }) => <Text>{item.attributes.name}</Text>}
+            /> */}
             <CategoryButton name="Sandwish" color="#E4CDED" />
             <CategoryButton name="Déjeuner" color="#CFDDDB" />
             <CategoryButton name="Boissons" color="#C2DBE9" />
