@@ -31,9 +31,9 @@ const ProductButton = ({
   setTotalQuantity,
 }: Props) => {
   //synchroniser les quantité des produits avec celle du panier quand on change de categorie garde la méme quantité
-  console.log("Cart :", cartItems);
+  // console.log("Cart :", cartItems);
   var article;
-  console.log(product.id);
+  // console.log(product.id);
   for (var i = 0; i < cartItems.length; i++) {
     if (cartItems[i].id === product.id) {
       article = cartItems[i];

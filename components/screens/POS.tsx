@@ -91,8 +91,8 @@ export default function POS({ navigation }) {
 
   useEffect(() => {
     // Function to execute on page load
-    // GetCategoriesAPI();
-    // GetProductsAPI(CategoriesData[0].id);
+    GetCategoriesAPI();
+    GetProductsAPI(CategoriesData[0].id);
   }, []);
   // if (isLoadingCategories)
   // if (isLoadingProducts) {
