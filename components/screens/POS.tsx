@@ -51,8 +51,10 @@ export default function POS({ navigation }) {
     Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
     InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
   });
-  //https://rhopos.live/api/categories/(bid)
-  //https://rhopos.live/api/products/(bid)/(catid)
+  //https://rhopos.live/api/categories/(businessid)
+  //https://rhopos.live/api/products/(businessid)/(categoryid)
+  const [discount, setDiscount] = useState(0);
+  const [table, setTable] = useState(0);
 
   const [isLoadingCategories, setLoadingCategories] = useState(true);
   const [isLoadingProducts, setLoadingProducts] = useState(true);
