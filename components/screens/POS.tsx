@@ -310,7 +310,14 @@ export default function POS({ navigation }) {
                 animation="bouncy"
                 size="$5"
                 onPress={() => {
-                  navigation.navigate("Cart");
+                  navigation.navigate("Cart", {
+                    cartItems,
+                    setCartItems,
+                    discount,
+                    setDiscount,
+                    table,
+                    setTable,
+                  });
                 }}
                 style={{
                   width: "85%",

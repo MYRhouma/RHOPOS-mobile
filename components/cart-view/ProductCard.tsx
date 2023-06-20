@@ -46,7 +46,7 @@ const ProductCard = ({ name, quantity, price }: Props) => {
             {name} <Text style={styles.quantityText}>x{quantity}</Text>
           </Text>
 
-          <Text>{price} $</Text>
+          <Text>{price} DT</Text>
         </View>
       </Swipeable>
     </GestureHandlerRootView>
