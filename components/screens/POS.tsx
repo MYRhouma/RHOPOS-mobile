@@ -53,7 +53,7 @@ export default function POS({ navigation }) {
   });
   //https://rhopos.live/api/categories/(businessid)
   //https://rhopos.live/api/products/(businessid)/(categoryid)
-  const [discount, setDiscount] = useState(0);
+  const [discount, setDiscount] = useState(0.1);
   const [table, setTable] = useState(0);
 
   const [isLoadingCategories, setLoadingCategories] = useState(true);
@@ -130,10 +130,10 @@ export default function POS({ navigation }) {
             }}
           >
             <AlignLeft />
-            <View style={{ flexDirection: "row" }}>
+            {/* <View style={{ flexDirection: "row" }}>
               <Text style={{ paddingRight: 5 }}>Table 5</Text>
               <ChevronDown />
-            </View>
+            </View> */}
           </View>
           {/* <ScrollView
             horizontal

@@ -40,6 +40,7 @@ export default function App() {
           name="Cart"
           component={Cart}
           options={{
+            // headerShown: false,
             title: "Panier",
             headerStyle: { backgroundColor: "#111315" },
             headerTitleStyle: {

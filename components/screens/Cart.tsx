@@ -10,11 +10,19 @@ import {
   FlatList,
   Platform,
   StyleSheet,
+  TouchableOpacity,
   SafeAreaView,
   ScrollView,
   View,
 } from "react-native";
-import { ShoppingBag, ArrowRight } from "@tamagui/lucide-icons";
+import {
+  ArrowLeft,
+  DollarSign,
+  CreditCard,
+  ArrowRight,
+  Nfc,
+  Divide,
+} from "@tamagui/lucide-icons";
 import {
   H3,
   H6,
@@ -58,9 +66,18 @@ export default function Cart({ navigation }) {
   let setDiscount = route.params.setDiscount;
   let table = route.params.table;
   let setTable = route.params.setTable;
-  let subTotal = cartItems
-    .reduce((sum, product) => Number(sum) + Number(product.attributes.price), 0)
+  let subTotal: number = cartItems
+    .reduce(
+      (sum: number, product) => Number(sum) + Number(product.attributes.price),
+      0
+    )
     .toFixed(3);
+  let discountPercentage = discount * 100;
+  let discountedAmount: number = subTotal * discount;
+  let TVA: number = 10;
+  let TVAamount: string = ((subTotal * TVA) / 100).toFixed(3);
+  let Total: string = (subTotal - discountedAmount).toFixed(3);
+
   // console.log(subTotal);
   return (
     <TamaguiProvider config={config}>
@@ -82,15 +99,9 @@ export default function Cart({ navigation }) {
               />
             )}
           />
-          {/* <ScrollView contentContainerStyle={{}}>
-            <ProductCard name="Fish soup" quantity={3} price={"9.30"} />
-            <ProductCard name="Fish soup" quantity={5} price={"9.30"} />
-            <ProductCard name="Fish soup" quantity={2} price={"9.30"} />
-            <ProductCard name="Mloukhia" quantity={1} price={"9.30"} />
-            <ProductCard name="Fish soup" quantity={3} price={"9.30"} />
-          </ScrollView> */}
+
           <LinearGradient
-            style={{ position: "absolute", top: "60%", zIndex: 1 }}
+            style={{ position: "absolute", bottom: "64%", zIndex: 1 }}
             width="100%"
             height="$1"
             colors={["transparent", "#111315"]}
@@ -101,25 +112,30 @@ export default function Cart({ navigation }) {
             style={{
               // position: "absolute",
               // bottom: 0,
-              justifyContent: "space-around",
+              justifyContent: "space-between",
               width: "100%",
-              height: "50%",
+              height: "60%",
               backgroundColor: "transparent",
+              flexDirection: "column",
+              paddingTop: 20,
             }}
           >
             {/* debut Compta Text sous total reduciton total et bordure dashed */}
+
             <View style={styles.container}>
               <View style={styles.compta}>
                 <Text>Sous-total</Text>
                 <Text>{subTotal} DT</Text>
               </View>
+              {discount > 0 ? (
+                <View style={styles.compta}>
+                  <Text>Réduction</Text>
+                  <Text>- {discountedAmount} DT</Text>
+                </View>
+              ) : null}
               <View style={styles.compta}>
-                <Text>Réduction</Text>
-                <Text>- 10.00 DT</Text>
-              </View>
-              <View style={styles.compta}>
-                <Text>TVA 10%</Text>
-                <Text>2.35 DT</Text>
+                <Text>TVA {TVA}%</Text>
+                <Text>{TVAamount} DT</Text>
               </View>
               <View style={styles.containerDashedBorder}>
                 <View style={styles.dashedBorder} />
@@ -127,25 +143,47 @@ export default function Cart({ navigation }) {
 
               <View style={styles.compta}>
                 <H3>Total</H3>
-                <H3>15.85 DT</H3>
+                <H3>{Total} DT</H3>
               </View>
+              <View style={styles.compta}>
+                <Text style={{ color: "#ababab", marginTop: 30 }}>Méthode</Text>
+              </View>
+              <View
+                style={{
+                  // backgroundColor: "blue",
+                  alignSelf: "center",
+                  width: "80%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <TouchableOpacity style={styles.paymentMethod}>
+                  <DollarSign style={styles.paymentMethodIcon} size="$2" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.paymentMethod}>
+                  <CreditCard style={styles.paymentMethodIcon} size="$2" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.paymentMethod}>
+                  <Nfc style={styles.paymentMethodIcon} size="$2" />
+                </TouchableOpacity>
+              </View>
+              <Button
+                themeInverse
+                animation="bouncy"
+                size="$5"
+                style={{
+                  width: "85%",
+                  alignSelf: "center",
+                  marginTop: 20,
+                  // zIndex: 9999,
+                }}
+              >
+                <Button.Text>
+                  Valider la commande <ArrowRight />
+                  {/* <ShoppingBag /> */}
+                </Button.Text>
+              </Button>
             </View>
-            <Button
-              themeInverse
-              animation="bouncy"
-              size="$5"
-              style={{
-                width: "85%",
-                alignSelf: "center",
-                marginTop: 40,
-                // zIndex: 9999,
-              }}
-            >
-              <Button.Text>
-                Valider la commande <ArrowRight />
-                {/* <ShoppingBag /> */}
-              </Button.Text>
-            </Button>
           </View>
         </SafeAreaView>
       </Theme>
@@ -155,8 +193,22 @@ export default function Cart({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
+    // backgroundColor: "purple",
+    flexGrow: 1,
     // justifyContent: "space-around",
   },
+  paymentMethod: {
+    // flexGrow: 1,
+    // backgroundColor: "red",
+    // marginHorizontal: 10,
+
+    borderRadius: 8,
+    borderWidth: 1,
+    paddingHorizontal: 30,
+    paddingVertical: 5,
+    borderColor: "#fff",
+  },
+  paymentMethodIcon: { alignSelf: "center" },
   containerDashedBorder: {
     overflow: "hidden",
   },
