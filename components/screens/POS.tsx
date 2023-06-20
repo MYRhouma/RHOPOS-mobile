@@ -29,8 +29,8 @@ import {
   Button,
   // View,
   XStack,
+  Spinner,
   Image,
-  ScrollView,
   Paragraph,
   H2,
   ListItem,
@@ -52,17 +52,41 @@ export default function POS({ navigation }) {
   //https://rhopos.live/api/categories/(bid)
   //https://rhopos.live/api/products/(bid)/(catid)
 
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
+  const [isLoadingCategories, setLoadingCategories] = useState(true);
+  const [isLoadingProducts, setLoadingProducts] = useState(true);
+  const [CategoriesData, setCategoriesData] = useState([]);
+  const [ProductsData, setProductsData] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
 
-  // axios
-  //   .get("https://rhopos.live/api/categories/1")
-  //   .then(({ DATA }) => {
-  //     setData(DATA.data);
-  //     console.log(DATA.data[0].attributes.name);
-  //   })
-  //   .catch((error) => console.error(error))
-  //   .finally(() => setLoading(false));
+  const GetCategoriesAPI = () => {
+    axios
+      // .get("https://rhopos.live/api/categories/1?format=vnd.api%2Bjson")
+      .get("https://rhopos.live/api/categories/1")
+      .then((QS) => {
+        // alert(JSON.stringify(QS.data.data));
+        setCategoriesData(QS.data.data);
+        // console.log(QS.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoadingCategories(false));
+  };
+  const GetProductsAPI = (catid: number) => {
+    axios
+      .get("https://rhopos.live/api/products/1/" + catid.toString())
+      .then((QS) => {
+        // alert(JSON.stringify(QS.data.data));
+        setProductsData(QS.data.data);
+        // console.log(QS.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoadingProducts(false));
+  };
+
+  if (isLoadingCategories) GetCategoriesAPI();
   const [totalQuantity, setTotalQuantity] = useState(0); // State for the total quantity
 
   if (!loaded) {
@@ -96,7 +120,7 @@ export default function POS({ navigation }) {
               <ChevronDown />
             </View>
           </View>
-          <ScrollView
+          {/* <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={
@@ -104,26 +128,104 @@ export default function POS({ navigation }) {
                 // paddingBottom: 25,
               }
             }
-          >
-            {/* <FlatList
-              data={DATA}
-              renderItem={({ item }) => <Item title={item.title} />}
-              keyExtractor={(item) => item.id}
-            /> */}
-
-            {/* <FlatList
-              data={JSON.stringify(data)}
+          > */}
+          {isLoadingCategories ? (
+            <Spinner size="small" />
+          ) : (
+            <FlatList
+              style={{ maxHeight: 100 }} // MAX HEIGHT CATEGORY SECTION
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              data={CategoriesData}
               keyExtractor={({ id }) => id}
-              renderItem={({ item }) => <Text>{item.attributes.name}</Text>}
-            /> */}
-            <CategoryButton name="Sandwish" color="#E4CDED" />
-            <CategoryButton name="Déjeuner" color="#CFDDDB" />
-            <CategoryButton name="Boissons" color="#C2DBE9" />
-            <CategoryButton name="Cafés" color="#F1C8D0" />
-            <CategoryButton name="Desserts" color="#C9CAEF" />
-          </ScrollView>
+              renderItem={({ item }) => (
+                <CategoryButton
+                  id={item.id}
+                  name={item.attributes.name}
+                  color={item.attributes.color}
+                  nbArticle={item.attributes.product_count}
+                  updateProductList={() => {
+                    GetProductsAPI(item.id);
+                  }}
+                />
+              )}
+            />
+          )}
 
-          <ScrollView
+          {/* <CategoryButton name="Sandwish" color="#E4CDED" nbArticle={5} />
+            <CategoryButton name="Déjeuner" color="#CFDDDB" nbArticle={7} />
+            <CategoryButton name="Boissons" color="#C2DBE9" nbArticle={2} />
+            <CategoryButton name="Cafés" color="#F1C8D0" nbArticle={13} />
+            <CategoryButton name="Desserts" color="#C9CAEF" nbArticle={11} /> */}
+          {/* </ScrollView> */}
+          <View
+            style={{
+              overflow: "hidden",
+            }}
+          >
+            <View
+              style={{
+                borderStyle: "dashed",
+                borderWidth: 1,
+                borderColor: "#292b2d",
+                marginTop: 10,
+                marginBottom: -1,
+                height: 0,
+                width: "95%",
+                alignSelf: "center",
+              }}
+            />
+          </View>
+          {isLoadingProducts ? (
+            <Spinner
+              style={{
+                alignSelf: "center",
+                justifyContent: "center",
+                margin: 20,
+              }}
+              size="small"
+            />
+          ) : (
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={
+                {
+                  // backgroundColor: "red",
+                  // alignSelf: "center",
+                  // flexGrow: 1,
+                  // flexDirection: "row",
+                  // flexWrap: "wrap",
+                  // // margin: "auto",
+                  // width: "100%",
+                  // alignItems: "center",$
+                  // display: "flex",
+                  // justifyContent: "space-evenly",
+                  // paddingBottom: 90,
+                  // // borderTopColor: "#292b2d",
+                  // // borderWidth: 1,
+                  // flexDirection: "row",
+                  // flexWrap: "wrap",
+                  // justifyContent: "space-between",
+                }
+              }
+              numColumns={2}
+              data={ProductsData}
+              keyExtractor={({ id }) => id}
+              renderItem={({ item }) => (
+                <ProductButton
+                  id={item.id}
+                  cartItems={cartItems}
+                  setCartItems={setCartItems}
+                  color={item.attributes.product_category_color}
+                  name={item.attributes.name}
+                  price={item.attributes.price.toFixed(3)}
+                  prevTotalQuantity={totalQuantity}
+                  setTotalQuantity={setTotalQuantity}
+                />
+              )}
+            />
+          )}
+          {/* <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               flexGrow: 1,
@@ -133,11 +235,11 @@ export default function POS({ navigation }) {
               width: "100%",
               justifyContent: "space-evenly",
               paddingBottom: 90,
-              borderTopColor: "#292b2d",
-              borderWidth: 1,
+              // borderTopColor: "#292b2d",
+              // borderWidth: 1,
             }}
-          >
-            <ProductButton
+          > */}
+          {/* <ProductButton
               name="Makloub"
               price="9.30"
               prevTotalQuantity={totalQuantity}
@@ -184,8 +286,10 @@ export default function POS({ navigation }) {
               price="9.30"
               prevTotalQuantity={totalQuantity}
               setTotalQuantity={setTotalQuantity}
-            />
-          </ScrollView>
+          
+            /> */}
+          {/* </ScrollView> */}
+
           {totalQuantity > 0 ? (
             <View
               style={{

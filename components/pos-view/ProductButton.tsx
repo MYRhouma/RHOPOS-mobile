@@ -10,15 +10,23 @@ import { ArrowRight, Plus, Minus } from "@tamagui/lucide-icons";
 import { Button, Text, H6 } from "tamagui";
 
 interface Props {
+  id: number;
   name: string;
+  color: string;
   price: string;
+  cartItems: [];
+  setCartItems: () => void;
   prevTotalQuantity: number;
   setTotalQuantity: () => void;
 }
 
 const ProductButton = ({
+  id,
   name,
+  color,
   price,
+  cartItems,
+  setCartItems,
   prevTotalQuantity,
   setTotalQuantity,
 }: Props) => {
@@ -35,14 +43,14 @@ const ProductButton = ({
   const UpdateBorderWidthAnimation = (width: number) => {
     Animated.timing(widthValue, {
       toValue: width,
-      duration: 500, // Durée de l'animation en millisecondes
+      duration: 450, // Durée de l'animation en millisecondes
       useNativeDriver: false, // Utilisation du pilote natif pour les animations
     }).start();
   };
   const IncrementQty = (qty: number) => {
     setQty(qty + 1);
     setTotalQuantity(prevTotalQuantity + 1);
-    if (qty >= 0) {
+    if (qty == 0) {
       UpdateBorderWidthAnimation(windowWidth * 0.45); //45% de largeurr taa l'ecran
       setIsFilled(true);
     }
@@ -61,8 +69,8 @@ const ProductButton = ({
     position: "absolute",
     left: 0,
     bottom: 0,
-    backgroundColor: "#E4CDED",
-    height: 110,
+    backgroundColor: color,
+    height: 118,
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
     borderTopRightRadius: isFilled ? 8 : 0,
@@ -77,7 +85,11 @@ const ProductButton = ({
       // flexDirection: "column",
       borderRadius: 8,
       width: "45%",
-      height: 110,
+      // alignItems: "center",
+      // justifyContent: "center",
+      // flex: 1,
+      margin: 5,
+      // height: 110,
       backgroundColor: "#292b2d",
       marginTop: 10,
       paddingLeft: 15,
@@ -95,6 +107,13 @@ const ProductButton = ({
     },
   });
 
+  // const product = cartItems.find((product) => product.id === id);
+
+  // if (product) {
+  //   setQty(product.quantity);
+  // } else {
+  //   setQty(0);
+  // }
   return (
     <View style={styles.product}>
       <Text style={{ fontSize: 11, color: isFilled ? "#686868" : "#ababab" }}>
@@ -115,9 +134,11 @@ const ProductButton = ({
         <View
           style={{
             // backgroundColor: "purple",
-            width: "60%",
+            width: "100%",
             flexDirection: "row",
-            justifyContent: "space-around",
+            justifyContent: "flex-end",
+            // paddingVertical: 10,
+            paddingTop: 5,
           }}
         >
           <TouchableOpacity
@@ -126,7 +147,7 @@ const ProductButton = ({
               DecrementQty(qty);
             }}
           >
-            <Minus color={"#686868"} size={28} />
+            <Minus color={"#686868"} size={32} />
           </TouchableOpacity>
           <Text
             style={{
@@ -144,7 +165,7 @@ const ProductButton = ({
               IncrementQty(qty);
             }}
           >
-            <Plus color={isFilled ? "#686868" : "#ababab"} size={28} />
+            <Plus color={isFilled ? "#686868" : "#ababab"} size={32} />
           </TouchableOpacity>
         </View>
       </View>

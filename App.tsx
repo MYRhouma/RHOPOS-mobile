@@ -4,6 +4,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import POS from "./components/screens/POS";
 import Cart from "./components/screens/Cart";
+import Table from "./components/screens/Table";
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -18,7 +20,7 @@ export default function App() {
             headerStyle: { backgroundColor: "#fff" },
             headerTransparent: true,
           }}
-        ></Stack.Screen>
+        />
         <Stack.Screen
           name="POS"
           component={POS}
@@ -33,7 +35,7 @@ export default function App() {
 
             // headerTransparent: true,
           }}
-        ></Stack.Screen>
+        />
         <Stack.Screen
           name="Cart"
           component={Cart}
@@ -43,11 +45,19 @@ export default function App() {
             headerTitleStyle: {
               color: "#fff",
             },
+            headerBackTitle: "",
             headerTintColor: "#fff", // Set the color of the back button
 
             headerTransparent: true,
           }}
-        ></Stack.Screen>
+        />
+        <Stack.Screen
+          name="Table"
+          component={Table}
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
