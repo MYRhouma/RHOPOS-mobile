@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -10,18 +10,18 @@ import { ArrowRight, Plus, Minus } from "@tamagui/lucide-icons";
 import { Button, Text, H6 } from "tamagui";
 
 interface Props {
-  id: number;
+  product: {};
   name: string;
   color: string;
   price: string;
-  cartItems: [];
-  setCartItems: () => void;
+  cartItems: never[];
+  setCartItems: (cartItems: never[]) => void;
   prevTotalQuantity: number;
-  setTotalQuantity: () => void;
+  setTotalQuantity: (x: number) => void;
 }
 
 const ProductButton = ({
-  id,
+  product,
   name,
   color,
   price,
@@ -30,7 +30,17 @@ const ProductButton = ({
   prevTotalQuantity,
   setTotalQuantity,
 }: Props) => {
-  const [qty, setQty] = useState(0);
+  //synchroniser les quantité des produits avec celle du panier quand on change de categorie garde la méme quantité
+  console.log("Cart :", cartItems);
+  var article;
+  console.log(product.id);
+  for (var i = 0; i < cartItems.length; i++) {
+    if (cartItems[i].id === product.id) {
+      article = cartItems[i];
+    }
+  }
+
+  const [qty, setQty] = useState(article ? article.quantity : 0);
 
   const LeftBorderWidth = 5;
   const windowWidth = Dimensions.get("window").width; // Get the width of the window
@@ -40,31 +50,68 @@ const ProductButton = ({
   );
   const [isFilled, setIsFilled] = useState(false);
 
-  const UpdateBorderWidthAnimation = (width: number) => {
-    Animated.timing(widthValue, {
-      toValue: width,
-      duration: 450, // Durée de l'animation en millisecondes
-      useNativeDriver: false, // Utilisation du pilote natif pour les animations
-    }).start();
+  const UpdateBorderWidthAnimation = (
+    width: number,
+    skipAnimation: bool = false
+  ) => {
+    if (!skipAnimation)
+      Animated.timing(widthValue, {
+        toValue: width,
+        duration: 300, // Durée de l'animation en millisecondes
+        useNativeDriver: false, // Utilisation du pilote natif pour les animations
+      }).start();
+    else
+      Animated.timing(widthValue, {
+        toValue: width,
+        duration: 0, // Durée de l'animation en millisecondes
+        useNativeDriver: false, // Utilisation du pilote natif pour les animations
+      }).start();
   };
   const IncrementQty = (qty: number) => {
-    setQty(qty + 1);
+    qty = ++qty;
+    setQty(qty);
     setTotalQuantity(prevTotalQuantity + 1);
-    if (qty == 0) {
+
+    if (qty === 1) {
       UpdateBorderWidthAnimation(windowWidth * 0.45); //45% de largeurr taa l'ecran
       setIsFilled(true);
+      product.quantity = 1;
+      // console.log(product);
+      setCartItems([...cartItems, product]);
+    } else {
+      article.quantity = qty;
     }
+    // console.log(cartItems);
   };
+
   const DecrementQty = (qty: number) => {
     if (qty > 0) {
-      setQty(qty - 1);
+      qty = --qty;
+      setQty(qty);
       setTotalQuantity(prevTotalQuantity - 1);
+      //check if mawjoud and update qty
+      if (article) {
+        article.quantity = qty;
+      }
     }
-    if (qty <= 1) {
+    if (qty == 0) {
       UpdateBorderWidthAnimation(LeftBorderWidth);
       setIsFilled(false);
+      //check if mawjoud et supprimer
+      if (article)
+        setCartItems(cartItems.filter((item) => item.id !== product.id));
     }
+    // console.log(cartItems);
   };
+  useEffect(() => {
+    // Function to execute on page load
+
+    if (article && article.quantity > 0) {
+      setIsFilled(true);
+      UpdateBorderWidthAnimation(windowWidth * 0.45, true);
+    }
+  }, []);
+
   const animatedStyle = {
     position: "absolute",
     left: 0,

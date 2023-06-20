@@ -20,6 +20,7 @@ import {
 } from "@tamagui/lucide-icons";
 import {
   H3,
+  H6,
   Text,
   TamaguiProvider,
   Theme,
@@ -35,6 +36,7 @@ import {
   H2,
   ListItem,
   Card,
+  H1,
 } from "tamagui";
 import config from "../../tamagui.config";
 import axios from "axios";
@@ -58,20 +60,6 @@ export default function POS({ navigation }) {
   const [ProductsData, setProductsData] = useState([]);
   const [cartItems, setCartItems] = useState([]);
 
-  const GetCategoriesAPI = () => {
-    axios
-      // .get("https://rhopos.live/api/categories/1?format=vnd.api%2Bjson")
-      .get("https://rhopos.live/api/categories/1")
-      .then((QS) => {
-        // alert(JSON.stringify(QS.data.data));
-        setCategoriesData(QS.data.data);
-        // console.log(QS.data.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => setLoadingCategories(false));
-  };
   const GetProductsAPI = (catid: number) => {
     axios
       .get("https://rhopos.live/api/products/1/" + catid.toString())
@@ -86,7 +74,34 @@ export default function POS({ navigation }) {
       .finally(() => setLoadingProducts(false));
   };
 
-  if (isLoadingCategories) GetCategoriesAPI();
+  const GetCategoriesAPI = () => {
+    axios
+      // .get("https://rhopos.live/api/categories/1?format=vnd.api%2Bjson")
+      .get("https://rhopos.live/api/categories/1")
+      .then((QS) => {
+        // alert(JSON.stringify(QS.data.data));
+        setCategoriesData(QS.data.data);
+        // console.log(QS.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoadingCategories(false));
+  };
+
+  useEffect(() => {
+    // Function to execute on page load
+    // GetCategoriesAPI();
+    // GetProductsAPI(CategoriesData[0].id);
+  }, []);
+  // if (isLoadingCategories)
+  // if (isLoadingProducts) {
+  //   GetCategoriesAPI();
+  //   console.log("TTT", CategoriesData);
+  //   // if (CategoriesData) GetProductsAPI(CategoriesData[0].id);
+  //   setLoadingProducts(false);
+  // }
+
   const [totalQuantity, setTotalQuantity] = useState(0); // State for the total quantity
 
   if (!loaded) {
@@ -176,44 +191,33 @@ export default function POS({ navigation }) {
               }}
             />
           </View>
+          <Button
+            onPress={() => {
+              setCartItems([]);
+            }}
+          >
+            Reset
+          </Button>
           {isLoadingProducts ? (
-            <Spinner
-              style={{
-                alignSelf: "center",
-                justifyContent: "center",
-                margin: 20,
-              }}
-              size="small"
-            />
+            // <Spinner
+            //   style={{
+            //     alignSelf: "center",
+            //     justifyContent: "center",
+            //     margin: 20,
+            //   }}
+            //   size="small"
+            // />
+            <H6>Veuillez choisir une categorie de produits</H6>
           ) : (
             <FlatList
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={
-                {
-                  // backgroundColor: "red",
-                  // alignSelf: "center",
-                  // flexGrow: 1,
-                  // flexDirection: "row",
-                  // flexWrap: "wrap",
-                  // // margin: "auto",
-                  // width: "100%",
-                  // alignItems: "center",$
-                  // display: "flex",
-                  // justifyContent: "space-evenly",
-                  // paddingBottom: 90,
-                  // // borderTopColor: "#292b2d",
-                  // // borderWidth: 1,
-                  // flexDirection: "row",
-                  // flexWrap: "wrap",
-                  // justifyContent: "space-between",
-                }
-              }
+              contentContainerStyle={{}}
               numColumns={2}
               data={ProductsData}
               keyExtractor={({ id }) => id}
               renderItem={({ item }) => (
                 <ProductButton
-                  id={item.id}
+                  product={item}
                   cartItems={cartItems}
                   setCartItems={setCartItems}
                   color={item.attributes.product_category_color}
