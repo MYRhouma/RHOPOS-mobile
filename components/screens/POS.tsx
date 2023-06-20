@@ -89,18 +89,16 @@ export default function POS({ navigation }) {
       .finally(() => setLoadingCategories(false));
   };
 
-  useEffect(() => {
-    // Function to execute on page load
-    GetCategoriesAPI();
-    GetProductsAPI(CategoriesData[0].id);
-  }, []);
-  // if (isLoadingCategories)
+  if (isLoadingCategories) GetCategoriesAPI();
   // if (isLoadingProducts) {
   //   GetCategoriesAPI();
   //   console.log("TTT", CategoriesData);
   //   // if (CategoriesData) GetProductsAPI(CategoriesData[0].id);
   //   setLoadingProducts(false);
   // }
+  // useEffect(() => {
+  // if (CategoriesData) GetProductsAPI(CategoriesData[0].id);
+  // }, []);
 
   const [totalQuantity, setTotalQuantity] = useState(0); // State for the total quantity
 
