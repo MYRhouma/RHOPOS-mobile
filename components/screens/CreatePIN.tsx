@@ -22,44 +22,15 @@ export default function EnterPIN({ navigation }) {
   let route = useRoute();
   let authentication = route.params.authentication;
   const [buffer, setBuffer] = useState("");
-  const [is_valid, setValid] = useState(true);
   // const PIN = "5518";
   useEffect(() => {
     if (authentication.isAuthenticated) {
-      const localStorage = async (buffer: string) => {
-        try {
-          const pinCode = await AsyncStorage.getItem("pinCode");
-          // const pinCode = "5518";
-          console.log("pinCode : ", pinCode);
-          if (!pinCode) {
-            navigation.replace("CreatePIN", { authentication });
-          } else if (buffer === pinCode) {
-            setValid(true);
-            // setTimeout(() => {
-            // navigation.navigate("POS");
-            navigation.replace("POS", { authentication });
-            // setBuffer("");
-            // }, 200);
-          } else {
-            if (buffer.length >= 4) {
-              // HapticFeedback.trigger("impactLight", options);
-              // if (Platform.OS === "ios") {
-              //   Vibration.vibrate(100);
-              // } else if (Platform.OS === "android") {
-              //   Vibration.vibrate(100);
-              // }
-              Vibration.vibrate(100);
-              setTimeout(() => {
-                setBuffer("");
-              }, 300);
-            }
-            setValid(false);
-          }
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      };
-      localStorage(buffer);
+      if (buffer.length === 4) {
+        setTimeout(() => {
+          navigation.navigate("CreatePINverif", { authentication, buffer });
+          setBuffer("");
+        }, 150);
+      }
     }
   }, [buffer]);
 
@@ -98,9 +69,9 @@ export default function EnterPIN({ navigation }) {
           // backgroundColor={"$backgroundSoft"}
           backgroundColor={"#fff"}
         >
-          <H3>Entrez votre PIN</H3>
+          <H3>Créez votre PIN</H3>
 
-          <ShakeAnimation isCorrect={is_valid} buffer={buffer} />
+          <ShakeAnimation isCorrect={true} buffer={buffer} />
           <Spacer />
           <YStack space ai="center" jc="center">
             <XStack space>

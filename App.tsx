@@ -5,6 +5,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import POS from "./components/screens/POS";
 import Cart from "./components/screens/Cart";
 import Table from "./components/screens/Table";
+import Login from "./components/screens/Login";
+import CreatePIN from "./components/screens/CreatePIN";
+import CreatePINverif from "./components/screens/CreatePINverif";
+import Splash from "./components/screens/Splash";
 
 const Stack = createNativeStackNavigator();
 
@@ -12,6 +16,38 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: true }}>
+        <Stack.Screen
+          name="Splash"
+          component={Splash}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="CreatePIN"
+          component={CreatePIN}
+          options={{
+            title: "", //no title
+            headerStyle: { backgroundColor: "#fff" },
+            headerTransparent: true,
+          }}
+        />
+        <Stack.Screen
+          name="CreatePINverif"
+          component={CreatePINverif}
+          options={{
+            title: "", //no title
+            headerStyle: { backgroundColor: "#fff" },
+            headerTransparent: true,
+          }}
+        />
         <Stack.Screen
           name="EnterPIN"
           component={EnterPIN}
@@ -21,6 +57,7 @@ export default function App() {
             headerTransparent: true,
           }}
         />
+
         <Stack.Screen
           name="POS"
           component={POS}

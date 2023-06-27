@@ -18,13 +18,15 @@ const ProductCard = ({ name, quantity, price }: Props) => {
       color: "#ababab",
     },
     card: {
+      borderWidth: 0.5,
+      borderColor: "magenta",
       width: "85%",
       alignSelf: "center",
       // height: 110,
       backgroundColor: "#292b2d",
       // marginTop: 10,
       // marginBottom: 5,
-      padding: 20,
+      padding: 18,
       borderRadius: 10,
       flexDirection: "row",
       justifyContent: "space-between",
@@ -35,9 +37,15 @@ const ProductCard = ({ name, quantity, price }: Props) => {
     return (
       <Button
         animation="bouncy"
-        style={{ marginRight: "7.5%", paddingVertical: 25 }}
+        style={{
+          marginRight: "7.5%",
+          paddingVertical: 25,
+          marginVertical: 5,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
-        <Trash2 color="white" />
+        <Trash2 color="red" />
       </Button>
     );
   };

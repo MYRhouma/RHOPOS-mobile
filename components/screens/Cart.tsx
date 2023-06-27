@@ -46,7 +46,25 @@ import { useRoute } from "@react-navigation/native";
 
 import dark from "../../theme-dark";
 import config from "../../tamagui.config";
+
 export default function Cart({ navigation }) {
+  let route = useRoute();
+
+  let cartItems = route.params.cartItems;
+  // let setCartItems = route.params.setCartItems;
+  let discount = route.params.discount;
+  // let setDiscount = route.params.setDiscount;
+  // let table = route.params.table;
+  // let setTable = route.params.setTable;
+  let subTotal: number = cartItems
+    .reduce((sum: number, product) => Number(sum) + Number(product.price), 0)
+    .toFixed(3);
+  let discountPercentage = discount * 100;
+  let discountedAmount: string = (subTotal * discount).toFixed(3);
+  let TVA: number = 10;
+  let TVAamount: string = ((subTotal * TVA) / 100).toFixed(3);
+  let Total: string = (subTotal - discountedAmount).toFixed(3);
+
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
@@ -56,27 +74,6 @@ export default function Cart({ navigation }) {
   if (!loaded) {
     return null;
   }
-
-  let route = useRoute();
-
-  // console.log(route.params.cartItems);
-  let cartItems = route.params.cartItems;
-  let setCartItems = route.params.setCartItems;
-  let discount = route.params.discount;
-  let setDiscount = route.params.setDiscount;
-  let table = route.params.table;
-  let setTable = route.params.setTable;
-  let subTotal: number = cartItems
-    .reduce(
-      (sum: number, product) => Number(sum) + Number(product.attributes.price),
-      0
-    )
-    .toFixed(3);
-  let discountPercentage = discount * 100;
-  let discountedAmount: number = subTotal * discount;
-  let TVA: number = 10;
-  let TVAamount: string = ((subTotal * TVA) / 100).toFixed(3);
-  let Total: string = (subTotal - discountedAmount).toFixed(3);
 
   // console.log(subTotal);
   return (
@@ -93,15 +90,15 @@ export default function Cart({ navigation }) {
             keyExtractor={({ id }) => id}
             renderItem={({ item }) => (
               <ProductCard
-                name={item.attributes.name}
+                name={item.name}
                 quantity={item.quantity}
-                price={item.attributes.price.toFixed(3)}
+                price={item.price.toFixed(3)}
               />
             )}
           />
 
           <LinearGradient
-            style={{ position: "absolute", bottom: "64%", zIndex: 1 }}
+            style={{ position: "absolute", bottom: "44%", zIndex: 1 }}
             width="100%"
             height="$1"
             colors={["transparent", "#111315"]}
@@ -114,7 +111,7 @@ export default function Cart({ navigation }) {
               // bottom: 0,
               justifyContent: "space-between",
               width: "100%",
-              height: "60%",
+              height: "40%",
               backgroundColor: "transparent",
               flexDirection: "column",
               paddingTop: 20,
@@ -145,8 +142,10 @@ export default function Cart({ navigation }) {
                 <H3>Total</H3>
                 <H3>{Total} DT</H3>
               </View>
-              <View style={styles.compta}>
-                <Text style={{ color: "#ababab", marginTop: 30 }}>Méthode</Text>
+              {/* <View style={styles.compta}>
+                <Text style={{ color: "#ababab", marginTop: 30 }}>
+                  Méthode de paiement
+                </Text>
               </View>
               <View
                 style={{
@@ -157,16 +156,35 @@ export default function Cart({ navigation }) {
                   justifyContent: "space-between",
                 }}
               >
-                <TouchableOpacity style={styles.paymentMethod}>
-                  <DollarSign style={styles.paymentMethodIcon} size="$2" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.paymentMethod}>
-                  <CreditCard style={styles.paymentMethodIcon} size="$2" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.paymentMethod}>
-                  <Nfc style={styles.paymentMethodIcon} size="$2" />
-                </TouchableOpacity>
-              </View>
+                <View>
+                  <TouchableOpacity style={styles.paymentMethodActive}>
+                    <DollarSign
+                      style={styles.paymentMethodIcon}
+                      color="#000"
+                      size="$2"
+                    />
+                  </TouchableOpacity>
+                  <Text style={{ alignSelf: "center", paddingTop: 6 }}>
+                    Espèces
+                  </Text>
+                </View>
+                <View>
+                  <TouchableOpacity style={styles.paymentMethod}>
+                    <CreditCard style={styles.paymentMethodIcon} size="$2" />
+                  </TouchableOpacity>
+                  <Text style={{ alignSelf: "center", paddingTop: 6 }}>
+                    Carte
+                  </Text>
+                </View>
+                <View>
+                  <TouchableOpacity style={styles.paymentMethod}>
+                    <Nfc style={styles.paymentMethodIcon} size="$2" />
+                  </TouchableOpacity>
+                  <Text style={{ alignSelf: "center", paddingTop: 6 }}>
+                    NFC
+                  </Text>
+                </View>
+              </View> */}
               <Button
                 themeInverse
                 animation="bouncy"
@@ -198,16 +216,21 @@ const styles = StyleSheet.create({
     // justifyContent: "space-around",
   },
   paymentMethod: {
-    // flexGrow: 1,
-    // backgroundColor: "red",
-    // marginHorizontal: 10,
-
     borderRadius: 8,
     borderWidth: 1,
     paddingHorizontal: 30,
     paddingVertical: 5,
     borderColor: "#fff",
   },
+  paymentMethodActive: {
+    borderRadius: 8,
+    borderWidth: 0.5,
+    paddingHorizontal: 30,
+    paddingVertical: 5,
+    borderColor: "#000",
+    backgroundColor: "#fff",
+  },
+
   paymentMethodIcon: { alignSelf: "center" },
   containerDashedBorder: {
     overflow: "hidden",

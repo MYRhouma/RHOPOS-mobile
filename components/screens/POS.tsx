@@ -44,16 +44,19 @@ import axios from "axios";
 import ProductButton from "../pos-view/ProductButton";
 import CategoryButton from "../pos-view/CategoryButton";
 import { log } from "react-native-reanimated";
-
+import { useRoute } from "@react-navigation/native";
 export default function POS({ navigation }) {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
     InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
   });
+
+  let route = useRoute();
+  let authentication = route.params.authentication;
   //https://rhopos.live/api/categories/(businessid)
   //https://rhopos.live/api/products/(businessid)/(categoryid)
-  const [discount, setDiscount] = useState(0.1);
+  const [discount, setDiscount] = useState(0.3);
   const [table, setTable] = useState(0);
 
   const [isLoadingCategories, setLoadingCategories] = useState(true);
@@ -63,12 +66,17 @@ export default function POS({ navigation }) {
   const [cartItems, setCartItems] = useState([]);
 
   const GetProductsAPI = (catid: number) => {
+    const headers = {
+      Authorization: `JWT ${authentication.accessToken}`,
+    };
     axios
-      .get("https://rhopos.live/api/products/1/" + catid.toString())
+      .get("https://rhopos.live/api/products/" + catid.toString(), {
+        headers,
+      })
       .then((QS) => {
         // alert(JSON.stringify(QS.data.data));
-        setProductsData(QS.data.data);
-        // console.log(QS.data.data);
+        setProductsData(QS.data);
+        // console.log(QS.data);
       })
       .catch((error) => {
         console.error(error);
@@ -77,13 +85,16 @@ export default function POS({ navigation }) {
   };
 
   const GetCategoriesAPI = () => {
+    const headers = {
+      Authorization: `JWT ${authentication.accessToken}`,
+    };
     axios
       // .get("https://rhopos.live/api/categories/1?format=vnd.api%2Bjson")
-      .get("https://rhopos.live/api/categories/1")
+      .get("https://rhopos.live/api/categories/", { headers })
       .then((QS) => {
         // alert(JSON.stringify(QS.data.data));
-        setCategoriesData(QS.data.data);
-        // console.log(QS.data.data);
+        setCategoriesData(QS.data);
+        // console.log(QS.data);
       })
       .catch((error) => {
         console.error(error);
@@ -112,6 +123,9 @@ export default function POS({ navigation }) {
     <TamaguiProvider config={config}>
       {/* <Theme name={colorScheme === "dark" ? "dark" : "light"}> */}
       <Theme name="dark">
+        {/* <StatusBar style="auto" /> */}
+        <StatusBar style="light" />
+
         <SafeAreaView
           style={{
             flex: 1,
@@ -156,9 +170,9 @@ export default function POS({ navigation }) {
               renderItem={({ item }) => (
                 <CategoryButton
                   id={item.id}
-                  name={item.attributes.name}
-                  color={item.attributes.color}
-                  nbArticle={item.attributes.product_count}
+                  name={item.name}
+                  color={item.color}
+                  nbArticle={item.product_count}
                   updateProductList={() => {
                     GetProductsAPI(item.id);
                   }}
@@ -220,9 +234,9 @@ export default function POS({ navigation }) {
                   product={item}
                   cartItems={cartItems}
                   setCartItems={setCartItems}
-                  color={item.attributes.product_category_color}
-                  name={item.attributes.name}
-                  price={item.attributes.price.toFixed(3)}
+                  color={item.product_category_color}
+                  name={item.name}
+                  price={item.price.toFixed(3)}
                   prevTotalQuantity={totalQuantity}
                   setTotalQuantity={setTotalQuantity}
                 />
@@ -312,11 +326,11 @@ export default function POS({ navigation }) {
                 onPress={() => {
                   navigation.navigate("Cart", {
                     cartItems,
-                    setCartItems,
+                    // setCartItems, NON SERIALISABLE A NE PAS GARDER !
                     discount,
-                    setDiscount,
+                    // setDiscount,
                     table,
-                    setTable,
+                    // setTable,
                   });
                 }}
                 style={{

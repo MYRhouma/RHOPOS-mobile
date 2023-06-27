@@ -18,48 +18,34 @@ import ShakeAnimation from "../code-view/AnimatedDots";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function EnterPIN({ navigation }) {
+export default function CreatePINverif({ navigation }) {
   let route = useRoute();
   let authentication = route.params.authentication;
+  let oldPIN = route.params.buffer;
   const [buffer, setBuffer] = useState("");
-  const [is_valid, setValid] = useState(true);
   // const PIN = "5518";
   useEffect(() => {
     if (authentication.isAuthenticated) {
-      const localStorage = async (buffer: string) => {
-        try {
-          const pinCode = await AsyncStorage.getItem("pinCode");
-          // const pinCode = "5518";
-          console.log("pinCode : ", pinCode);
-          if (!pinCode) {
-            navigation.replace("CreatePIN", { authentication });
-          } else if (buffer === pinCode) {
-            setValid(true);
-            // setTimeout(() => {
-            // navigation.navigate("POS");
-            navigation.replace("POS", { authentication });
-            // setBuffer("");
-            // }, 200);
-          } else {
-            if (buffer.length >= 4) {
-              // HapticFeedback.trigger("impactLight", options);
-              // if (Platform.OS === "ios") {
-              //   Vibration.vibrate(100);
-              // } else if (Platform.OS === "android") {
-              //   Vibration.vibrate(100);
-              // }
-              Vibration.vibrate(100);
-              setTimeout(() => {
-                setBuffer("");
-              }, 300);
+      if (buffer.length === 4) {
+        if (buffer === oldPIN) {
+          // Pop the last screen from the stack
+          navigation.pop();
+
+          // Replace the screen beneath it with the new screen
+          navigation.replace("POS", { authentication });
+          const localStorage = async (buffer: string) => {
+            try {
+              const pinCode = await AsyncStorage.setItem("pinCode", buffer);
+            } catch (error) {
+              console.error("Error:", error);
             }
-            setValid(false);
-          }
-        } catch (error) {
-          console.error("Error:", error);
+          };
+          localStorage(buffer);
+        } else {
+          navigation.pop();
         }
-      };
-      localStorage(buffer);
+      }
+      // navigation.navigate("CreatePINverif", { authentication, buffer });
     }
   }, [buffer]);
 
@@ -98,9 +84,9 @@ export default function EnterPIN({ navigation }) {
           // backgroundColor={"$backgroundSoft"}
           backgroundColor={"#fff"}
         >
-          <H3>Entrez votre PIN</H3>
+          <H3>Confirmez votre PIN</H3>
 
-          <ShakeAnimation isCorrect={is_valid} buffer={buffer} />
+          <ShakeAnimation isCorrect={true} buffer={buffer} />
           <Spacer />
           <YStack space ai="center" jc="center">
             <XStack space>

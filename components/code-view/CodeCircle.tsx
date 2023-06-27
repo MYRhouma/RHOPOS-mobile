@@ -10,7 +10,7 @@ interface Props {
 const CodeCircle = ({ buffer, index, isCorrect }: Props) => {
   return (
     <Circle
-      animation="bouncy"
+      animation="quick"
       size="$1"
       style={{
         borderWidth: 2,
