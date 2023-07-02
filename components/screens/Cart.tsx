@@ -1,4 +1,10 @@
-import React, { useState, useRef, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useContext,
+} from "react";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "tamagui/linear-gradient";
@@ -45,16 +51,16 @@ import {
   Card,
 } from "tamagui";
 import { useRoute } from "@react-navigation/native";
-
+import axios from "axios";
 import dark from "../../theme-dark";
 import config from "../../tamagui.config";
 import {
   BottomSheetModal,
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
+import { AuthContext } from "../auth/Authentication";
 
 export default function Cart({ navigation }) {
-  const fromCartItems2ApiCall = (cartItems) => {};
   // FOR THE API CALL POST https://rhopos.live/api/orders/
   //   {
   //     "items": [
@@ -75,10 +81,8 @@ export default function Cart({ navigation }) {
   //     ],
   //     "is_paid": false,
   //     "discount": 10.0,
-  //     "status": 1,
-  //     "business": 1,
-  //     "table": 2,
-  //     "user": 2
+  //     "status": 0,
+  //     "table": 2
   // }
 
   //CART ITEMS ACTUAL DATASET :
@@ -87,10 +91,23 @@ export default function Cart({ navigation }) {
   //   {"category": 6, "id": 2, "name": "Direct", "price": 2.7, "product_category_color": "#F1C8D0", "quantity": 1, "with_options": false}
   // ]
 
+  // const [ApiSerializedData, setApiSerializedData] = useState({
+  //   items: [],
+  //   is_paid: false,
+  //   discount: 0.0,
+  //   status: 0,
+  //   table: null,
+  // });
+
+  const { accessToken, refreshToken, logout, generateNewAccessToken } =
+    useContext(AuthContext);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   let route = useRoute();
 
   let cartItems = route.params.cartItems;
-  // let setCartItems = route.params.setCartItems;
+  let setCartItems = route.params.setCartItems;
   let discount = route.params.discount;
   // let setDiscount = route.params.setDiscount;
   // let table = route.params.table;
@@ -103,6 +120,50 @@ export default function Cart({ navigation }) {
   let TVA: number = 10;
   let TVAamount: string = ((subTotal * TVA) / 100).toFixed(3);
   let Total: string = (subTotal - subTotal * discount).toFixed(3);
+
+  // const fromCartItems2ApiCall = () => {
+
+  //   return SerializedData;
+  // };
+  const submitOrder = () => {
+    if (isSubmitting) {
+      return; // Prevent multiple submissions
+    }
+
+    setIsSubmitting(true); // Disable the button
+
+    const ApiSerializedData = {
+      items: cartItems.map((item) => ({
+        price: item.price,
+        discount: 0.0,
+        quantity: item.quantity,
+        ready: 1,
+        product: item.id,
+      })),
+      is_paid: false,
+      discount: discount,
+      status: 0,
+      table: null,
+    };
+
+    const headers = {
+      Authorization: `JWT ${accessToken}`,
+    };
+
+    axios
+      .post("https://rhopos.live/api/orders/", ApiSerializedData, { headers })
+      .then((res) => {
+        setCartItems([]);
+        console.log(res.data);
+        navigation.goBack();
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        setIsSubmitting(false); // Re-enable the button
+      });
+  };
 
   // ref
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -270,6 +331,8 @@ export default function Cart({ navigation }) {
                     marginTop: 20,
                     // zIndex: 9999,
                   }}
+                  onPress={submitOrder}
+                  disabled={isSubmitting}
                 >
                   <Button.Text>
                     Valider la commande <ArrowRight />

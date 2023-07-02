@@ -134,6 +134,9 @@ export default function POS({ navigation }) {
   useEffect(() => {
     if (CategoriesData.length > 0) GetProductsAPI(CategoriesData[0].id);
   }, [isLoadingCategories]);
+  useEffect(() => {
+    if (cartItems.length === 0) setTotalQuantity(0);
+  }, [cartItems]);
 
   // if (isLoadingProducts) {
   //   GetCategoriesAPI();
@@ -360,6 +363,7 @@ export default function POS({ navigation }) {
                 onPress={() => {
                   navigation.navigate("Cart", {
                     cartItems,
+                    setCartItems,
                     // setCartItems, NON SERIALISABLE A NE PAS GARDER !
                     discount,
                     // setDiscount,

@@ -79,8 +79,8 @@ const ProductButton = ({
     });
     setCartItems(updatedItems);
     if (qty === 1) {
-      UpdateBorderWidthAnimation(windowWidth * 0.45); //45% de largeurr taa l'ecran
-      setIsFilled(true);
+      // UpdateBorderWidthAnimation(windowWidth * 0.45); //45% de largeurr taa l'ecran
+      // setIsFilled(true);
       product.quantity = 1;
       // console.log(product);
       setCartItems([...cartItems, product]);
@@ -108,8 +108,8 @@ const ProductButton = ({
       }
     }
     if (qty == 0) {
-      UpdateBorderWidthAnimation(LeftBorderWidth);
-      setIsFilled(false);
+      // UpdateBorderWidthAnimation(LeftBorderWidth);
+      // setIsFilled(false);
       //check if mawjoud et supprimer
       if (article)
         setCartItems(cartItems.filter((item) => item.id !== product.id));
@@ -124,6 +124,20 @@ const ProductButton = ({
       UpdateBorderWidthAnimation(windowWidth * 0.45, true);
     }
   }, []);
+  useEffect(() => {
+    if (qty === 0) {
+      UpdateBorderWidthAnimation(LeftBorderWidth);
+      setIsFilled(false);
+    } else if (qty === 1) {
+      UpdateBorderWidthAnimation(windowWidth * 0.45); //45% de largeurr taa l'ecran
+      setIsFilled(true);
+    }
+  }, [qty]);
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      setQty(0);
+    }
+  }, [cartItems]);
 
   const animatedStyle = {
     position: "absolute",
