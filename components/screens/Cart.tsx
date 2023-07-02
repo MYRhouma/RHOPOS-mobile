@@ -54,6 +54,39 @@ import {
 } from "@gorhom/bottom-sheet";
 
 export default function Cart({ navigation }) {
+  const fromCartItems2ApiCall = (cartItems) => {};
+  // FOR THE API CALL POST https://rhopos.live/api/orders/
+  //   {
+  //     "items": [
+  //         {
+  //             "price": 5.4,
+  //             "discount": 50.0,
+  //             "quantity": 50,
+  //             "ready": true,
+  //             "product": 2
+  //         },
+  //         {
+  //             "price": 2.7,
+  //             "discount": 0.0,
+  //             "quantity": 50,
+  //             "ready": false,
+  //             "product": 3
+  //         }
+  //     ],
+  //     "is_paid": false,
+  //     "discount": 10.0,
+  //     "status": 1,
+  //     "business": 1,
+  //     "table": 2,
+  //     "user": 2
+  // }
+
+  //CART ITEMS ACTUAL DATASET :
+  // [
+  //   {"category": 5, "id": 5, "name": "Coca", "price": 2.5, "product_category_color": "#C2DBE9", "quantity": 1, "with_options": false},
+  //   {"category": 6, "id": 2, "name": "Direct", "price": 2.7, "product_category_color": "#F1C8D0", "quantity": 1, "with_options": false}
+  // ]
+
   let route = useRoute();
 
   let cartItems = route.params.cartItems;

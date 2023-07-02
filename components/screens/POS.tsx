@@ -73,7 +73,9 @@ export default function POS({ navigation }) {
   const [CategoriesData, setCategoriesData] = useState([]);
   const [ProductsData, setProductsData] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-
+  useEffect(() => {
+    console.log(cartItems);
+  }, [cartItems]);
   const GetProductsAPI = (catid: number) => {
     const headers = {
       Authorization: `JWT ${accessToken}`,
@@ -130,7 +132,6 @@ export default function POS({ navigation }) {
   if (isLoadingCategories) GetCategoriesAPI();
 
   useEffect(() => {
-    console.log(CategoriesData);
     if (CategoriesData.length > 0) GetProductsAPI(CategoriesData[0].id);
   }, [isLoadingCategories]);
 

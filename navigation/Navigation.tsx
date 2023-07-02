@@ -24,7 +24,7 @@ const Navigation = () => {
     skipEnterPIN,
     isPinValid,
   } = useContext(AuthContext);
-  if (isLoading) {
+  setTimeout(() => {
     return (
       <View
         style={{
@@ -44,7 +44,7 @@ const Navigation = () => {
         <StatusBar style="dark" />
       </View>
     );
-  }
+  }, 10000);
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: true }}>

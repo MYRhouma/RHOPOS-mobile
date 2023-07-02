@@ -71,7 +71,13 @@ const ProductButton = ({
     qty = ++qty;
     setQty(qty);
     setTotalQuantity(prevTotalQuantity + 1);
-
+    let updatedItems = cartItems.map((item) => {
+      if (item.id === product.id) {
+        return { ...item, quantity: qty };
+      }
+      return item;
+    });
+    setCartItems(updatedItems);
     if (qty === 1) {
       UpdateBorderWidthAnimation(windowWidth * 0.45); //45% de largeurr taa l'ecran
       setIsFilled(true);
@@ -89,6 +95,13 @@ const ProductButton = ({
       qty = --qty;
       setQty(qty);
       setTotalQuantity(prevTotalQuantity - 1);
+      let updatedItems = cartItems.map((item) => {
+        if (item.id === product.id) {
+          return { ...item, quantity: qty };
+        }
+        return item;
+      });
+      setCartItems(updatedItems);
       //check if mawjoud and update qty
       if (article) {
         article.quantity = qty;
