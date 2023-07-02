@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme, Vibration, Platform } from "react-native";
@@ -17,36 +17,46 @@ import config from "../../tamagui.config";
 import ShakeAnimation from "../code-view/AnimatedDots";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "../auth/Authentication";
 
 export default function CreatePINverif({ navigation }) {
   let route = useRoute();
-  let authentication = route.params.authentication;
+  // let authentication = route.params.authentication;
   let oldPIN = route.params.buffer;
+
+  const { CreatePIN } = useContext(AuthContext);
+
+  const [is_invalid, setInvalid] = useState(true);
   const [buffer, setBuffer] = useState("");
   // const PIN = "5518";
   useEffect(() => {
-    if (authentication.isAuthenticated) {
-      if (buffer.length === 4) {
-        if (buffer === oldPIN) {
-          // Pop the last screen from the stack
+    if (buffer.length >= 4) {
+      if (buffer === oldPIN) {
+        setInvalid(true);
+        // Pop the last screen from the stack
+        navigation.pop();
+        CreatePIN(buffer);
+        // Replace the screen beneath it with the new screen
+        // navigation.replace("POS");
+        // const localStorage = async (buffer: string) => {
+        //   try {
+        //     const refreshToken = await AsyncStorage.getItem("refreshToken");
+        //     if (!refreshToken) navigation.replace("Login");
+        //     const pinCode = await AsyncStorage.setItem("pinCode", buffer);
+        //   } catch (error) {
+        //     console.error("Error:", error);
+        //   }
+        // };
+        // localStorage(buffer);
+      } else {
+        setInvalid(false);
+        setTimeout(() => {
           navigation.pop();
-
-          // Replace the screen beneath it with the new screen
-          navigation.replace("POS", { authentication });
-          const localStorage = async (buffer: string) => {
-            try {
-              const pinCode = await AsyncStorage.setItem("pinCode", buffer);
-            } catch (error) {
-              console.error("Error:", error);
-            }
-          };
-          localStorage(buffer);
-        } else {
-          navigation.pop();
-        }
+          setInvalid(true);
+        }, 200);
       }
-      // navigation.navigate("CreatePINverif", { authentication, buffer });
     }
+    // navigation.navigate("CreatePINverif", { authentication, buffer });
   }, [buffer]);
 
   const handleKeyPress = (key: string) => {
@@ -86,7 +96,7 @@ export default function CreatePINverif({ navigation }) {
         >
           <H3>Confirmez votre PIN</H3>
 
-          <ShakeAnimation isCorrect={true} buffer={buffer} />
+          <ShakeAnimation isIncorrect={is_invalid} buffer={buffer} />
           <Spacer />
           <YStack space ai="center" jc="center">
             <XStack space>

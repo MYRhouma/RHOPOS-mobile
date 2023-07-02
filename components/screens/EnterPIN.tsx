@@ -1,7 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
-import { useColorScheme, Vibration, Platform } from "react-native";
+import {
+  useColorScheme,
+  Vibration,
+  TouchableOpacity,
+  Text,
+} from "react-native";
 import { Delete, XSquare } from "@tamagui/lucide-icons";
 import {
   H3,
@@ -17,49 +22,30 @@ import config from "../../tamagui.config";
 import ShakeAnimation from "../code-view/AnimatedDots";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Haptics from "expo-haptics";
+import { AuthContext } from "../auth/Authentication";
 
 export default function EnterPIN({ navigation }) {
-  let route = useRoute();
-  let authentication = route.params.authentication;
+  // let route = useRoute();
+  // let authentication = route.params.authentication;
+  const { logout, pinCode, CheckPIN } = useContext(AuthContext);
+
   const [buffer, setBuffer] = useState("");
-  const [is_valid, setValid] = useState(true);
-  // const PIN = "5518";
+  const [is_invalid, setInvalid] = useState(true);
   useEffect(() => {
-    if (authentication.isAuthenticated) {
-      const localStorage = async (buffer: string) => {
-        try {
-          const pinCode = await AsyncStorage.getItem("pinCode");
-          // const pinCode = "5518";
-          console.log("pinCode : ", pinCode);
-          if (!pinCode) {
-            navigation.replace("CreatePIN", { authentication });
-          } else if (buffer === pinCode) {
-            setValid(true);
-            // setTimeout(() => {
-            // navigation.navigate("POS");
-            navigation.replace("POS", { authentication });
-            // setBuffer("");
-            // }, 200);
-          } else {
-            if (buffer.length >= 4) {
-              // HapticFeedback.trigger("impactLight", options);
-              // if (Platform.OS === "ios") {
-              //   Vibration.vibrate(100);
-              // } else if (Platform.OS === "android") {
-              //   Vibration.vibrate(100);
-              // }
-              Vibration.vibrate(100);
-              setTimeout(() => {
-                setBuffer("");
-              }, 300);
-            }
-            setValid(false);
-          }
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      };
-      localStorage(buffer);
+    console.log(pinCode);
+    if (buffer.length >= 4) {
+      if (buffer === pinCode) {
+        setTimeout(() => {
+          CheckPIN(buffer);
+        }, 150);
+      } else {
+        setInvalid(false);
+        setTimeout(() => {
+          setBuffer("");
+          setInvalid(true);
+        }, 150);
+      }
     }
   }, [buffer]);
 
@@ -100,7 +86,7 @@ export default function EnterPIN({ navigation }) {
         >
           <H3>Entrez votre PIN</H3>
 
-          <ShakeAnimation isCorrect={is_valid} buffer={buffer} />
+          <ShakeAnimation isIncorrect={is_invalid} buffer={buffer} />
           <Spacer />
           <YStack space ai="center" jc="center">
             <XStack space>
@@ -139,6 +125,64 @@ export default function EnterPIN({ navigation }) {
                 icon={<Delete size="$3" />}
               />
             </XStack>
+            <TouchableOpacity
+              style={{ justifyContent: "center" }}
+              onPress={() => {
+                logout();
+              }}
+            >
+              <Text>J'ai oublié mon code PIN</Text>
+            </TouchableOpacity>
+            {/* <XStack>
+              <TouchableOpacity
+                onPress={() =>
+                  Haptics.notificationAsync(
+                    Haptics.NotificationFeedbackType.Success
+                  )
+                }
+              >
+                <Text style={{ padding: 30 }}>T</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  Haptics.notificationAsync(
+                    Haptics.NotificationFeedbackType.Error
+                  )
+                }
+              >
+                <Text style={{ padding: 30 }}>T</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  Haptics.notificationAsync(
+                    Haptics.NotificationFeedbackType.Warning
+                  )
+                }
+              >
+                <Text style={{ padding: 30 }}>T</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+                }
+              >
+                <Text style={{ padding: 30 }}>T</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+                }
+              >
+                <Text style={{ padding: 30 }}>T</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+                }
+              >
+                <Text style={{ padding: 30 }}>T</Text>
+              </TouchableOpacity>
+            </XStack> */}
           </YStack>
           <StatusBar style="auto" />
         </YStack>

@@ -4,10 +4,10 @@ import { Circle } from "tamagui";
 interface Props {
   buffer: string;
   index: number;
-  isCorrect: boolean;
+  isIncorrect: boolean;
 }
 
-const CodeCircle = ({ buffer, index, isCorrect }: Props) => {
+const CodeCircle = ({ buffer, index, isIncorrect }: Props) => {
   return (
     <Circle
       animation="quick"

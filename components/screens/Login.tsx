@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme, Vibration, Platform } from "react-native";
@@ -18,49 +18,56 @@ import axios from "axios";
 // import { login, newAccessToken } from "../auth/Authentication";
 // import { authentication, setAuthentication } from "../auth/Authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "../auth/Authentication";
 
 export default function Login({ navigation }) {
+  const { login } = useContext(AuthContext);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [authentication, setAuthentication] = useState({
-    isAuthenticated: false,
-    email: "",
-    accessToken: "",
-    refreshToken: "",
-  });
+  // const [authentication, setAuthentication] = useState({
+  //   isAuthenticated: false,
+  //   email: "",
+  //   accessToken: "",
+  //   refreshToken: "",
+  // });
 
-  useEffect(() => {
-    console.log(authentication);
-    if (authentication.isAuthenticated) {
-      const localStorage = async (authentication: {
-        isAuthenticated: boolean;
-        email: string;
-        accessToken: string;
-        refreshToken: string;
-      }) => {
-        try {
-          const accessToken = await AsyncStorage.getItem("accessToken");
-          const refreshToken = await AsyncStorage.getItem("refreshToken");
-          console.log("AT : ", accessToken, " RT : ", refreshToken);
-          if (!accessToken || !refreshToken) {
-            await AsyncStorage.setItem(
-              "accessToken",
-              authentication.accessToken
-            );
-            await AsyncStorage.setItem(
-              "refreshToken",
-              authentication.refreshToken
-            );
-          }
-          navigation.replace("CreatePIN", { authentication });
-          // navigation.replace("EnterPIN", { authentication });
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      };
-      localStorage(authentication);
-    }
-  }, [authentication]);
+  // useEffect(() => {
+  //   console.log(authentication);
+  //   if (
+  //     authentication.isAuthenticated &&
+  //     authentication.accessToken &&
+  //     authentication.refreshToken
+  //   ) {
+  //     const localStorage = async (authentication: {
+  //       isAuthenticated: boolean;
+  //       email: string;
+  //       accessToken: string;
+  //       refreshToken: string;
+  //     }) => {
+  //       try {
+  //         // const pinCode = await AsyncStorage.getItem("pinCode");
+
+  //         // const accessToken = await AsyncStorage.getItem("accessToken");
+  //         // const refreshToken = await AsyncStorage.getItem("refreshToken");
+  //         // console.log("AT : ", accessToken, " RT : ", refreshToken);
+  //         console.log(authentication);
+  //         // if (!accessToken || !refreshToken) {
+  //         await AsyncStorage.setItem("accessToken", authentication.accessToken);
+  //         await AsyncStorage.setItem(
+  //           "refreshToken",
+  //           authentication.refreshToken
+  //         );
+  //         // }
+  //         navigation.replace("CreatePIN");
+  //         // navigation.replace("EnterPIN", { authentication });
+  //       } catch (error) {
+  //         console.error("Error:", error);
+  //       }
+  //     };
+  //     localStorage(authentication);
+  //   }
+  // }, [authentication]);
 
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
@@ -72,44 +79,25 @@ export default function Login({ navigation }) {
     return null;
   }
 
-  const login = (email: string, password: string) => {
-    axios
-      .post("https://rhopos.live/auth/jwt/create", {
-        email: email.toLowerCase(),
-        password: password,
-      })
-      .then((res) => {
-        let userInfo = res.data;
-        setAuthentication({
-          isAuthenticated: true,
-          email: email.toLowerCase(),
-          accessToken: userInfo.access,
-          refreshToken: userInfo.refresh,
-        });
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
-  const newAccessToken = (refreshToken: string) => {
-    axios
-      .post("https://rhopos.live/auth/jwt/refresh", {
-        refresh: refreshToken,
-      })
-      .then((res) => {
-        setAuthentication({
-          ...authentication,
-          accessToken: res.data.access,
-        });
-        console.log({
-          ...authentication,
-          accessToken: res.data.access,
-        });
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
+  // const newAccessToken = (refreshToken: string) => {
+  //   axios
+  //     .post("https://rhopos.live/auth/jwt/refresh", {
+  //       refresh: refreshToken,
+  //     })
+  //     .then((res) => {
+  //       setAuthentication({
+  //         ...authentication,
+  //         accessToken: res.data.access,
+  //       });
+  //       console.log({
+  //         ...authentication,
+  //         accessToken: res.data.access,
+  //       });
+  //     })
+  //     .catch((e) => {
+  //       console.log(e);
+  //     });
+  // };
   return (
     <TamaguiProvider config={config}>
       <Theme name={colorScheme === "dark" ? "dark" : "light"}>
@@ -123,6 +111,7 @@ export default function Login({ navigation }) {
         >
           <H3>Connexion</H3>
           <Input
+            keyboardType="email-address"
             value={email}
             onChangeText={(text) => setEmail(text)}
             size="$5"

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
-import { useColorScheme, Vibration, Platform } from "react-native";
+import { useColorScheme, TouchableOpacity, Text } from "react-native";
 import { Delete, XSquare } from "@tamagui/lucide-icons";
 import {
   H3,
@@ -15,37 +15,43 @@ import {
 import KeypadNumber from "../code-view/KeypadNumber";
 import config from "../../tamagui.config";
 import ShakeAnimation from "../code-view/AnimatedDots";
-import { useRoute } from "@react-navigation/native";
+// import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "../auth/Authentication";
 
 export default function EnterPIN({ navigation }) {
-  let route = useRoute();
-  let authentication = route.params.authentication;
+  // let route = useRoute();
+  // let authentication = route.params.authentication;
+
   const [buffer, setBuffer] = useState("");
-  // const PIN = "5518";
+
+  const { logout } = useContext(AuthContext);
+
   useEffect(() => {
-    if (authentication.isAuthenticated) {
-      if (buffer.length === 4) {
-        setTimeout(() => {
-          navigation.navigate("CreatePINverif", { authentication, buffer });
-          setBuffer("");
-        }, 150);
-      }
+    if (buffer.length === 4) {
+      setTimeout(() => {
+        navigation.navigate("CreatePINverif", { buffer });
+        setBuffer("");
+      }, 150);
     }
   }, [buffer]);
+
+  // useEffect(() => {
+  //   const localStorage = async () => {
+  //     try {
+  //       const refreshToken = await AsyncStorage.getItem("refreshToken");
+  //       if (!refreshToken) navigation.replace("Login");
+  //     } catch (error) {
+  //       console.error("Error:", error);
+  //     }
+  //   };
+  //   localStorage();
+  // }, []);
 
   const handleKeyPress = (key: string) => {
     if (buffer.length < 4) {
       setBuffer(buffer + key);
     }
-
-    // if (buffer + key === PIN) {
-    //   setTimeout(() => {
-    //     // navigation.navigate("POS");
-    //     navigation.replace("POS", { authentication });
-    //     setBuffer("");
-    //   }, 300);
-    // }
   };
 
   const colorScheme = useColorScheme();
@@ -71,7 +77,7 @@ export default function EnterPIN({ navigation }) {
         >
           <H3>Créez votre PIN</H3>
 
-          <ShakeAnimation isCorrect={true} buffer={buffer} />
+          <ShakeAnimation isIncorrect={true} buffer={buffer} />
           <Spacer />
           <YStack space ai="center" jc="center">
             <XStack space>
@@ -110,6 +116,14 @@ export default function EnterPIN({ navigation }) {
                 icon={<Delete size="$3" />}
               />
             </XStack>
+            <TouchableOpacity
+              style={{ justifyContent: "center" }}
+              onPress={() => {
+                logout();
+              }}
+            >
+              <Text>Changer de compte</Text>
+            </TouchableOpacity>
           </YStack>
           <StatusBar style="auto" />
         </YStack>

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "tamagui/linear-gradient";
 import ProductCard from "../cart-view/ProductCard";
+import CustomBackdrop from "../cart-view/CustomBackdrop";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import {
   useColorScheme,
@@ -20,6 +21,7 @@ import {
   DollarSign,
   CreditCard,
   ArrowRight,
+  PlusCircle,
   Nfc,
   Divide,
 } from "@tamagui/lucide-icons";
@@ -46,6 +48,10 @@ import { useRoute } from "@react-navigation/native";
 
 import dark from "../../theme-dark";
 import config from "../../tamagui.config";
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
 
 export default function Cart({ navigation }) {
   let route = useRoute();
@@ -63,7 +69,21 @@ export default function Cart({ navigation }) {
   let discountedAmount: string = (subTotal * discount).toFixed(3);
   let TVA: number = 10;
   let TVAamount: string = ((subTotal * TVA) / 100).toFixed(3);
-  let Total: string = (subTotal - discountedAmount).toFixed(3);
+  let Total: string = (subTotal - subTotal * discount).toFixed(3);
+
+  // ref
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // variables
+  const snapPoints = useMemo(() => ["80%"], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("handleSheetChanges", index);
+  }, []);
 
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
@@ -80,69 +100,91 @@ export default function Cart({ navigation }) {
     <TamaguiProvider config={config}>
       {/* <Theme name={colorScheme === "dark" ? "dark" : "light"}> */}
       <Theme>
-        <StatusBar style="light" />
-
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#111315" }}>
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{}}
-            data={cartItems}
-            keyExtractor={({ id }) => id}
-            renderItem={({ item }) => (
-              <ProductCard
-                name={item.name}
-                quantity={item.quantity}
-                price={item.price.toFixed(3)}
-              />
-            )}
-          />
-
-          <LinearGradient
-            style={{ position: "absolute", bottom: "44%", zIndex: 1 }}
-            width="100%"
-            height="$1"
-            colors={["transparent", "#111315"]}
-            start={[0, 0]}
-            end={[0, 1]}
-          />
-          <View
-            style={{
-              // position: "absolute",
-              // bottom: 0,
-              justifyContent: "space-between",
-              width: "100%",
-              height: "40%",
-              backgroundColor: "transparent",
-              flexDirection: "column",
-              paddingTop: 20,
+        <BottomSheetModalProvider>
+          <StatusBar style="light" />
+          <BottomSheetModal
+            backgroundStyle={{
+              backgroundColor: "#111315",
             }}
+            backdropComponent={CustomBackdrop}
+            ref={bottomSheetModalRef}
+            index={0}
+            snapPoints={snapPoints}
+            onChange={handleSheetChanges}
           >
-            {/* debut Compta Text sous total reduciton total et bordure dashed */}
+            <View style={styles.contentContainer}>
+              <Text>Awesome 🎉</Text>
+            </View>
+          </BottomSheetModal>
+          <SafeAreaView style={{ flex: 1, backgroundColor: "#111315" }}>
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{}}
+              data={cartItems}
+              keyExtractor={({ id }) => id}
+              renderItem={({ item }) => (
+                <ProductCard
+                  name={item.name}
+                  quantity={item.quantity}
+                  price={item.price.toFixed(3)}
+                />
+              )}
+            />
 
-            <View style={styles.container}>
-              <View style={styles.compta}>
-                <Text>Sous-total</Text>
-                <Text>{subTotal} DT</Text>
-              </View>
-              {discount > 0 ? (
+            <LinearGradient
+              style={{ position: "absolute", bottom: "44%", zIndex: 1 }}
+              width="100%"
+              height="$1"
+              colors={["transparent", "#111315"]}
+              start={[0, 0]}
+              end={[0, 1]}
+            />
+            <View
+              style={{
+                // position: "absolute",
+                // bottom: 0,
+                justifyContent: "space-between",
+                width: "100%",
+                height: "40%",
+                backgroundColor: "transparent",
+                flexDirection: "column",
+                paddingTop: 20,
+              }}
+            >
+              {/* debut Compta Text sous total reduciton total et bordure dashed */}
+
+              <View style={styles.container}>
                 <View style={styles.compta}>
-                  <Text>Réduction</Text>
-                  <Text>- {discountedAmount} DT</Text>
+                  <Text>Sous-total</Text>
+                  <Text>{subTotal} DT</Text>
                 </View>
-              ) : null}
-              <View style={styles.compta}>
-                <Text>TVA {TVA}%</Text>
-                <Text>{TVAamount} DT</Text>
-              </View>
-              <View style={styles.containerDashedBorder}>
-                <View style={styles.dashedBorder} />
-              </View>
+                {discount > 0 ? (
+                  <View style={styles.compta}>
+                    <Text>Réduction</Text>
+                    <Text>- {discountedAmount} DT</Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    onPress={handlePresentModalPress}
+                    style={styles.compta}
+                  >
+                    <Text>Réduction</Text>
+                    <PlusCircle size="$1" color="white" />
+                  </TouchableOpacity>
+                )}
+                <View style={styles.compta}>
+                  <Text>TVA {TVA}%</Text>
+                  <Text>{TVAamount} DT</Text>
+                </View>
+                <View style={styles.containerDashedBorder}>
+                  <View style={styles.dashedBorder} />
+                </View>
 
-              <View style={styles.compta}>
-                <H3>Total</H3>
-                <H3>{Total} DT</H3>
-              </View>
-              {/* <View style={styles.compta}>
+                <View style={styles.compta}>
+                  <H3>Total</H3>
+                  <H3>{Total} DT</H3>
+                </View>
+                {/* <View style={styles.compta}>
                 <Text style={{ color: "#ababab", marginTop: 30 }}>
                   Méthode de paiement
                 </Text>
@@ -185,31 +227,36 @@ export default function Cart({ navigation }) {
                   </Text>
                 </View>
               </View> */}
-              <Button
-                themeInverse
-                animation="bouncy"
-                size="$5"
-                style={{
-                  width: "85%",
-                  alignSelf: "center",
-                  marginTop: 20,
-                  // zIndex: 9999,
-                }}
-              >
-                <Button.Text>
-                  Valider la commande <ArrowRight />
-                  {/* <ShoppingBag /> */}
-                </Button.Text>
-              </Button>
+                <Button
+                  themeInverse
+                  animation="bouncy"
+                  size="$5"
+                  style={{
+                    width: "85%",
+                    alignSelf: "center",
+                    marginTop: 20,
+                    // zIndex: 9999,
+                  }}
+                >
+                  <Button.Text>
+                    Valider la commande <ArrowRight />
+                    {/* <ShoppingBag /> */}
+                  </Button.Text>
+                </Button>
+              </View>
             </View>
-          </View>
-        </SafeAreaView>
+          </SafeAreaView>
+        </BottomSheetModalProvider>
       </Theme>
     </TamaguiProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
   container: {
     // backgroundColor: "purple",
     flexGrow: 1,

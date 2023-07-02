@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import {
@@ -40,11 +40,13 @@ import {
 } from "tamagui";
 import config from "../../tamagui.config";
 import axios from "axios";
-
 import ProductButton from "../pos-view/ProductButton";
 import CategoryButton from "../pos-view/CategoryButton";
 import { log } from "react-native-reanimated";
 import { useRoute } from "@react-navigation/native";
+import { AuthContext } from "../auth/Authentication";
+import { useNetInfo } from "@react-native-community/netinfo";
+
 export default function POS({ navigation }) {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
@@ -52,11 +54,18 @@ export default function POS({ navigation }) {
     InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
   });
 
-  let route = useRoute();
-  let authentication = route.params.authentication;
+  const { accessToken, refreshToken, logout, generateNewAccessToken } =
+    useContext(AuthContext);
+
+  const netInfo = useNetInfo();
+  useEffect(() => {
+    alert(`Type: ${netInfo.type} \n Is Connected? ${netInfo.isConnected}`);
+  }, [netInfo.isConnected]);
+  // let route = useRoute();
+  // let authentication = route.params.authentication;
   //https://rhopos.live/api/categories/(businessid)
   //https://rhopos.live/api/products/(businessid)/(categoryid)
-  const [discount, setDiscount] = useState(0.3);
+  const [discount, setDiscount] = useState(0);
   const [table, setTable] = useState(0);
 
   const [isLoadingCategories, setLoadingCategories] = useState(true);
@@ -67,7 +76,7 @@ export default function POS({ navigation }) {
 
   const GetProductsAPI = (catid: number) => {
     const headers = {
-      Authorization: `JWT ${authentication.accessToken}`,
+      Authorization: `JWT ${accessToken}`,
     };
     axios
       .get("https://rhopos.live/api/products/" + catid.toString(), {
@@ -79,14 +88,22 @@ export default function POS({ navigation }) {
         // console.log(QS.data);
       })
       .catch((error) => {
-        console.error(error);
+        if (error.response && error.response.status === 401) {
+          // Handle the 401 error (token refresh failed)
+          // For example, you can redirect the user to the login screen
+          console.log("Token refresh failed: 401 Unauthorized");
+          generateNewAccessToken(refreshToken);
+        } else {
+          // Handle other errors
+          console.log(error);
+        }
       })
       .finally(() => setLoadingProducts(false));
   };
 
   const GetCategoriesAPI = () => {
     const headers = {
-      Authorization: `JWT ${authentication.accessToken}`,
+      Authorization: `JWT ${accessToken}`,
     };
     axios
       // .get("https://rhopos.live/api/categories/1?format=vnd.api%2Bjson")
@@ -97,12 +114,26 @@ export default function POS({ navigation }) {
         // console.log(QS.data);
       })
       .catch((error) => {
-        console.error(error);
+        if (error.response && error.response.status === 401) {
+          // Handle the 401 error (token refresh failed)
+          // For example, you can redirect the user to the login screen
+          console.log("Token refresh failed: 401 Unauthorized");
+          generateNewAccessToken(refreshToken);
+        } else {
+          // Handle other errors
+          console.log(error);
+        }
       })
       .finally(() => setLoadingCategories(false));
   };
 
   if (isLoadingCategories) GetCategoriesAPI();
+
+  useEffect(() => {
+    console.log(CategoriesData);
+    if (CategoriesData.length > 0) GetProductsAPI(CategoriesData[0].id);
+  }, [isLoadingCategories]);
+
   // if (isLoadingProducts) {
   //   GetCategoriesAPI();
   //   console.log("TTT", CategoriesData);
@@ -158,6 +189,7 @@ export default function POS({ navigation }) {
               }
             }
           > */}
+
           {isLoadingCategories ? (
             <Spinner size="small" />
           ) : (
@@ -221,8 +253,9 @@ export default function POS({ navigation }) {
             //   }}
             //   size="small"
             // />
-            <H6>Veuillez choisir une categorie de produits</H6>
+            <Spinner size="large" />
           ) : (
+            // <H6>Veuillez choisir une categorie de produits</H6>
             <FlatList
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{}}
@@ -349,6 +382,14 @@ export default function POS({ navigation }) {
           ) : (
             ""
           )}
+          <TouchableOpacity
+            style={{ justifyContent: "center" }}
+            onPress={() => {
+              logout();
+            }}
+          >
+            <Text>Déconnexion</Text>
+          </TouchableOpacity>
         </SafeAreaView>
       </Theme>
     </TamaguiProvider>

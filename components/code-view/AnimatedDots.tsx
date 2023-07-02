@@ -2,15 +2,18 @@ import React, { useRef, useEffect } from "react";
 import { Animated, Easing } from "react-native";
 import { XStack } from "tamagui";
 import CodeCircle from "./CodeCircle";
+import * as Haptics from "expo-haptics";
 
 interface Props {
   buffer: string;
-  isCorrect: boolean;
+  isIncorrect: boolean;
 }
-const ShakeAnimation = ({ buffer, isCorrect }: Props) => {
+const ShakeAnimation = ({ buffer, isIncorrect }: Props) => {
   const shakeAnimationValue = useRef(new Animated.Value(0)).current;
 
   const shakeAnimation = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+
     shakeAnimationValue.setValue(0);
     Animated.sequence([
       Animated.timing(shakeAnimationValue, {
@@ -56,7 +59,7 @@ const ShakeAnimation = ({ buffer, isCorrect }: Props) => {
     inputRange: [-10, 10],
     outputRange: [-5, 5],
   });
-  if (buffer.length === 4 && !isCorrect) shakeAnimation();
+  if (buffer.length === 4 && !isIncorrect) shakeAnimation();
 
   return (
     <Animated.View
@@ -65,10 +68,10 @@ const ShakeAnimation = ({ buffer, isCorrect }: Props) => {
       }}
     >
       <XStack space onPress={shakeAnimation}>
-        <CodeCircle isCorrect={isCorrect} index={1} buffer={buffer} />
-        <CodeCircle isCorrect={isCorrect} index={2} buffer={buffer} />
-        <CodeCircle isCorrect={isCorrect} index={3} buffer={buffer} />
-        <CodeCircle isCorrect={isCorrect} index={4} buffer={buffer} />
+        <CodeCircle isIncorrect={isIncorrect} index={1} buffer={buffer} />
+        <CodeCircle isIncorrect={isIncorrect} index={2} buffer={buffer} />
+        <CodeCircle isIncorrect={isIncorrect} index={3} buffer={buffer} />
+        <CodeCircle isIncorrect={isIncorrect} index={4} buffer={buffer} />
       </XStack>
     </Animated.View>
   );

@@ -25,18 +25,11 @@ export default function Splash({ navigation }) {
     setTimeout(() => {
       const localStorage = async () => {
         try {
-          navigation.replace("Login");
-          // const refreshToken = await AsyncStorage.getItem("refreshToken");
-          // const pinCode = await AsyncStorage.getItem("pinCode");
-          // const pinCode = "5518";
-          // console.log("refreshToken : ", refreshToken);
-          // if (!refreshToken) {
-          //   navigation.replace("Login");
-          // } else if (!pinCode) {
-          //   navigation.replace("CreatePIN");
-          // } else {
-          //   // navigation.replace("EnterPIN");
-          // }
+          const pinCode = await AsyncStorage.getItem("pinCode");
+          const refreshToken = await AsyncStorage.getItem("refreshToken");
+          if (!refreshToken) navigation.replace("Login");
+          else if (!pinCode) navigation.replace("CreatePIN");
+          else navigation.replace("EnterPIN");
         } catch (error) {
           console.error("Error:", error);
         }
@@ -44,6 +37,30 @@ export default function Splash({ navigation }) {
       localStorage();
     }, 1000);
   }, []);
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const localStorage = async () => {
+  //       try {
+  //         navigation.replace("Login");
+  //         // const refreshToken = await AsyncStorage.getItem("refreshToken");
+  //         // const pinCode = await AsyncStorage.getItem("pinCode");
+  //         // const pinCode = "5518";
+  //         // console.log("refreshToken : ", refreshToken);
+  //         // if (!refreshToken) {
+  //         //   navigation.replace("Login");
+  //         // } else if (!pinCode) {
+  //         //   navigation.replace("CreatePIN");
+  //         // } else {
+  //         //   // navigation.replace("EnterPIN");
+  //         // }
+  //       } catch (error) {
+  //         console.error("Error:", error);
+  //       }
+  //     };
+  //     localStorage();
+  //   }, 1000);
+  // }, []);
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
