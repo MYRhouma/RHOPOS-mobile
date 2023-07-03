@@ -1,5 +1,6 @@
 import React, {
   useState,
+  useEffect,
   useRef,
   useCallback,
   useMemo,
@@ -29,6 +30,7 @@ import {
   ArrowRight,
   PlusCircle,
   Nfc,
+  MinusCircle,
   Divide,
 } from "@tamagui/lucide-icons";
 import {
@@ -41,7 +43,6 @@ import {
   Spacer,
   YStack,
   Input,
-  Button,
   // View,
   XStack,
   Image,
@@ -59,6 +60,7 @@ import {
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
 import { AuthContext } from "../auth/Authentication";
+import Discount from "./Discount";
 
 export default function Cart({ navigation }) {
   // FOR THE API CALL POST https://rhopos.live/api/orders/
@@ -103,15 +105,18 @@ export default function Cart({ navigation }) {
     useContext(AuthContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [discount, setDiscount] = useState(0);
+  const [table, setTable] = useState(0);
   let route = useRoute();
 
-  let cartItems = route.params.cartItems;
-  let setCartItems = route.params.setCartItems;
-  let discount = route.params.discount;
-  // let setDiscount = route.params.setDiscount;
-  // let table = route.params.table;
-  // let setTable = route.params.setTable;
+  const { cartItems, setCartItems, OldDiscount, setOldDiscount } = route.params;
+
+  useEffect(() => {
+    setDiscount(OldDiscount);
+  }, []);
+  useEffect(() => {
+    setOldDiscount(discount);
+  }, [discount]);
   let subTotal: number = cartItems
     .reduce((sum: number, product) => Number(sum) + Number(product.price), 0)
     .toFixed(3);
@@ -159,6 +164,8 @@ export default function Cart({ navigation }) {
       })
       .catch((e) => {
         console.log(e);
+        generateNewAccessToken(refreshToken);
+        // submitOrder();
       })
       .finally(() => {
         setIsSubmitting(false); // Re-enable the button
@@ -207,7 +214,12 @@ export default function Cart({ navigation }) {
             onChange={handleSheetChanges}
           >
             <View style={styles.contentContainer}>
-              <Text>Awesome 🎉</Text>
+              {/* <Text>Awesome 🎉</Text> */}
+              <Discount
+                bottomSheetModalRef={bottomSheetModalRef}
+                discount={discount}
+                setDiscount={setDiscount}
+              />
             </View>
           </BottomSheetModal>
           <SafeAreaView style={{ flex: 1, backgroundColor: "#111315" }}>
@@ -225,38 +237,46 @@ export default function Cart({ navigation }) {
               )}
             />
 
-            <LinearGradient
-              style={{ position: "absolute", bottom: "44%", zIndex: 1 }}
-              width="100%"
-              height="$1"
-              colors={["transparent", "#111315"]}
-              start={[0, 0]}
-              end={[0, 1]}
-            />
             <View
               style={{
                 // position: "absolute",
                 // bottom: 0,
                 justifyContent: "space-between",
                 width: "100%",
-                height: "40%",
+                // height: "40%",
                 backgroundColor: "transparent",
                 flexDirection: "column",
-                paddingTop: 20,
+                paddingTop: 15,
               }}
             >
+              {/* <LinearGradient
+                style={{ position: "absolute", top: -10, zIndex: 1 }}
+                width="100%"
+                height={10}
+                colors={["transparent", "#111315"]}
+                start={[0, 0]}
+                end={[0, 1]}
+              /> */}
               {/* debut Compta Text sous total reduciton total et bordure dashed */}
 
               <View style={styles.container}>
-                <View style={styles.compta}>
-                  <Text>Sous-total</Text>
-                  <Text>{subTotal} DT</Text>
-                </View>
                 {discount > 0 ? (
-                  <View style={styles.compta}>
-                    <Text>Réduction</Text>
-                    <Text>- {discountedAmount} DT</Text>
-                  </View>
+                  <>
+                    <View style={styles.compta}>
+                      <Text>Sous-total</Text>
+                      <Text>{subTotal} DT</Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={handlePresentModalPress}
+                      style={styles.compta}
+                    >
+                      <Text>Réduction</Text>
+                      <Text>
+                        - {discountedAmount} DT{" "}
+                        <MinusCircle size={12} color="white" />
+                      </Text>
+                    </TouchableOpacity>
+                  </>
                 ) : (
                   <TouchableOpacity
                     onPress={handlePresentModalPress}
@@ -266,10 +286,11 @@ export default function Cart({ navigation }) {
                     <PlusCircle size="$1" color="white" />
                   </TouchableOpacity>
                 )}
-                <View style={styles.compta}>
+
+                {/* <View style={styles.compta}>
                   <Text>TVA {TVA}%</Text>
                   <Text>{TVAamount} DT</Text>
-                </View>
+                </View> */}
                 <View style={styles.containerDashedBorder}>
                   <View style={styles.dashedBorder} />
                 </View>
@@ -321,24 +342,34 @@ export default function Cart({ navigation }) {
                   </Text>
                 </View>
               </View> */}
-                <Button
-                  themeInverse
-                  animation="bouncy"
-                  size="$5"
+                <TouchableOpacity
                   style={{
                     width: "85%",
+                    backgroundColor: "#fff",
                     alignSelf: "center",
-                    marginTop: 20,
+                    marginTop: 10,
+                    padding: 15,
+                    // flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 8,
                     // zIndex: 9999,
                   }}
                   onPress={submitOrder}
                   disabled={isSubmitting}
                 >
-                  <Button.Text>
-                    Valider la commande <ArrowRight />
-                    {/* <ShoppingBag /> */}
-                  </Button.Text>
-                </Button>
+                  <Text
+                    style={{
+                      color: "#000",
+                      fontSize: 18,
+                      fontWeight: "bold",
+                      textAlign: "center",
+                    }}
+                  >
+                    Valider la commande <ArrowRight size={18} color="#000" />
+                  </Text>
+                  {/* <ShoppingBag /> */}
+                </TouchableOpacity>
               </View>
             </View>
           </SafeAreaView>

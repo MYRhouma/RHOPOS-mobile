@@ -7,7 +7,7 @@ import {
   Dimensions,
 } from "react-native";
 import { ArrowRight, Plus, Minus } from "@tamagui/lucide-icons";
-import { Button, Text, H6 } from "tamagui";
+import { Button, Text, H5, H6 } from "tamagui";
 
 interface Props {
   product: {};
@@ -52,12 +52,12 @@ const ProductButton = ({
 
   const UpdateBorderWidthAnimation = (
     width: number,
-    skipAnimation: bool = false
+    skipAnimation: boolean = false
   ) => {
     if (!skipAnimation)
       Animated.timing(widthValue, {
         toValue: width,
-        duration: 300, // Durée de l'animation en millisecondes
+        duration: 200, // Durée de l'animation en millisecondes
         useNativeDriver: false, // Utilisation du pilote natif pour les animations
       }).start();
     else
@@ -144,7 +144,7 @@ const ProductButton = ({
     left: 0,
     bottom: 0,
     backgroundColor: color,
-    height: 118,
+    height: "100%",
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
     borderTopRightRadius: isFilled ? 8 : 0,
@@ -155,7 +155,6 @@ const ProductButton = ({
 
   const styles = StyleSheet.create({
     product: {
-      padding: 10,
       // flexDirection: "column",
       borderRadius: 8,
       width: "45%",
@@ -190,14 +189,18 @@ const ProductButton = ({
   // }
   return (
     <View style={styles.product}>
-      <Text style={{ fontSize: 11, color: isFilled ? "#686868" : "#ababab" }}>
-        Commande <ArrowRight color={isFilled ? "#000" : "#fff"} size={13} />{" "}
+      <Text
+        style={{
+          marginTop: 10,
+          fontSize: 11,
+          color: isFilled ? "#686868" : "#ababab",
+        }}
+      >
+        Commande <ArrowRight color={isFilled ? "#000" : "#fff"} size={9} />{" "}
         Cuisine
       </Text>
-      <H6 style={{ color: isFilled ? "#292b2d" : "#fff" }}>{name}</H6>
-      <Text style={{ color: isFilled ? "#686868" : "#ababab" }}>
-        {price} DT
-      </Text>
+      <H5 style={{ color: isFilled ? "#292b2d" : "#fff" }}>{name}</H5>
+      <H6 style={{ color: isFilled ? "#686868" : "#ababab" }}>{price} DT</H6>
       <View
         style={{
           flexDirection: "row",
@@ -212,7 +215,8 @@ const ProductButton = ({
             flexDirection: "row",
             justifyContent: "flex-end",
             // paddingVertical: 10,
-            paddingTop: 5,
+            // paddingTop: 5,
+            padding: 10,
           }}
         >
           <TouchableOpacity
@@ -221,11 +225,11 @@ const ProductButton = ({
               DecrementQty(qty);
             }}
           >
-            <Minus color={"#686868"} size={32} />
+            <Minus color={"#686868"} size={36} />
           </TouchableOpacity>
           <Text
             style={{
-              fontSize: 18,
+              fontSize: 21,
               marginHorizontal: 10,
               color: isFilled ? "#686868" : "#fff",
               alignSelf: "center", // Vertically center align text within the container
@@ -239,7 +243,7 @@ const ProductButton = ({
               IncrementQty(qty);
             }}
           >
-            <Plus color={isFilled ? "#686868" : "#ababab"} size={32} />
+            <Plus color={isFilled ? "#686868" : "#ababab"} size={36} />
           </TouchableOpacity>
         </View>
       </View>

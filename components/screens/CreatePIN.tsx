@@ -99,8 +99,8 @@ export default function EnterPIN({ navigation }) {
               <Button
                 onPress={() => setBuffer("")}
                 style={{
-                  width: 90,
-                  height: 90,
+                  width: 80,
+                  height: 80,
                   backgroundColor: "transparent",
                 }}
                 icon={<XSquare size="$3" />}
@@ -109,8 +109,8 @@ export default function EnterPIN({ navigation }) {
               <Button
                 onPress={() => setBuffer(buffer.slice(0, -1))}
                 style={{
-                  width: 90,
-                  height: 90,
+                  width: 80,
+                  height: 80,
                   backgroundColor: "transparent",
                 }}
                 icon={<Delete size="$3" />}

@@ -59,13 +59,13 @@ export default function POS({ navigation }) {
 
   const netInfo = useNetInfo();
   useEffect(() => {
-    alert(`Type: ${netInfo.type} \n Is Connected? ${netInfo.isConnected}`);
+    // alert(`Type: ${netInfo.type} \n Is Connected? ${netInfo.isConnected}`);
   }, [netInfo.isConnected]);
   // let route = useRoute();
   // let authentication = route.params.authentication;
   //https://rhopos.live/api/categories/(businessid)
   //https://rhopos.live/api/products/(businessid)/(categoryid)
-  const [discount, setDiscount] = useState(0);
+  const [OldDiscount, setOldDiscount] = useState(0);
   const [table, setTable] = useState(0);
 
   const [isLoadingCategories, setLoadingCategories] = useState(true);
@@ -179,6 +179,14 @@ export default function POS({ navigation }) {
             }}
           >
             <AlignLeft />
+            <TouchableOpacity
+              style={{ justifyContent: "center" }}
+              onPress={() => {
+                logout();
+              }}
+            >
+              <Text>Déconnexion</Text>
+            </TouchableOpacity>
             {/* <View style={{ flexDirection: "row" }}>
               <Text style={{ paddingRight: 5 }}>Table 5</Text>
               <ChevronDown />
@@ -365,8 +373,8 @@ export default function POS({ navigation }) {
                     cartItems,
                     setCartItems,
                     // setCartItems, NON SERIALISABLE A NE PAS GARDER !
-                    discount,
-                    // setDiscount,
+                    OldDiscount,
+                    setOldDiscount,
                     table,
                     // setTable,
                   });
@@ -387,14 +395,6 @@ export default function POS({ navigation }) {
           ) : (
             ""
           )}
-          <TouchableOpacity
-            style={{ justifyContent: "center" }}
-            onPress={() => {
-              logout();
-            }}
-          >
-            <Text>Déconnexion</Text>
-          </TouchableOpacity>
         </SafeAreaView>
       </Theme>
     </TamaguiProvider>
