@@ -61,8 +61,12 @@ import {
 } from "@gorhom/bottom-sheet";
 import { AuthContext } from "../auth/Authentication";
 import Discount from "./Discount";
+import { LogBox } from "react-native";
 
 export default function Cart({ navigation }) {
+  LogBox.ignoreLogs([
+    "Non-serializable values were found in the navigation state",
+  ]);
   // FOR THE API CALL POST https://rhopos.live/api/orders/
   //   {
   //     "items": [
@@ -139,7 +143,7 @@ export default function Cart({ navigation }) {
 
     const ApiSerializedData = {
       items: cartItems.map((item) => ({
-        price: item.price,
+        price: item.price * item.quantity, //total avec prix*quantite
         discount: 0.0,
         quantity: item.quantity,
         ready: 1,
@@ -355,7 +359,10 @@ export default function Cart({ navigation }) {
                     borderRadius: 8,
                     // zIndex: 9999,
                   }}
-                  onPress={submitOrder}
+                  onPress={() => {
+                    submitOrder();
+                    setDiscount(0);
+                  }}
                   disabled={isSubmitting}
                 >
                   <Text

@@ -34,9 +34,11 @@ export default function Discount({
   useEffect(() => {
     setBuffer((discount * 100).toString());
   }, []);
-  useEffect(() => {
-    console.log(discount);
-  }, [discount]);
+  // useEffect(() => {
+  //   if (buffer === "") setBuffer("0");
+  //   else setBuffer
+  // }, [buffer]);
+
   const handleKeyPress = (key: string) => {
     if (
       buffer.length < 7 &&
@@ -45,6 +47,7 @@ export default function Discount({
       !(buffer.indexOf(".") !== -1 && key === ".")
     )
       if (parseFloat(buffer + key) > 100) setBuffer("100");
+      else if (buffer === "0" && key !== ".") setBuffer(key);
       else setBuffer(buffer + key);
   };
 
